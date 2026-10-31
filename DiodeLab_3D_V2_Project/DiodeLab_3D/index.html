@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#090e18" />
+  <title>DiodeLab 3D v2.0 | FCT ESD 二极管测试实验室</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brandmark"><span class="brandicon">◈</span><span>Diode<span class="highlight">Lab</span><small>FCT · DIODE ANALYSIS LAB</small></span><span class="version">V2.0</span></div>
+    <div class="topmeta"><span class="top-chip"><span class="live-dot"></span> 实时 3D 仿真</span><span class="top-chip muted">离线 · 无需 npm 依赖</span></div>
+  </header>
+  <section class="intro"><div><div class="eyebrow">TEST BENCH / D500 · STC12C5A60S2</div><h1>二极管 <span>击穿特性与 ADC 测试实验室</span></h1><p>正反向恒流测试 · 3D 电流流向 · 钳位击穿特效 · 上下限曲线 · MCU 逐次采样与判定</p></div><div class="mode-note">工程教学仿真<span>所有测量值均为模拟生成</span></div></section>
+  <div class="spec-strip" aria-label="当前规格"><div><span>测试型号</span><b id="activePart">ESD245-B1-W0201</b></div><div><span>激励条件</span><b id="specCondition">±1mA · 12V限压</b></div><div><span>D500_Vf 正向</span><b id="specPos">+5.8 ～ +8.1 V</b></div><div><span>D500_Rf 反向</span><b id="specNeg">−8.1 ～ −5.8 V</b></div><div><span>双向结果</span><b id="overallResult">WAITING</b></div></div>
+  <main class="workspace">
+    <section class="left-side">
+      <div class="panel scene-panel"><div class="panel-header"><div><div class="kicker">01 / HARDWARE DIGITAL TWIN</div><h2>3D FCT 治具 · 极性切换与击穿特效</h2></div><div class="legend"><span><i class="legend-dot current"></i> 电流流向</span><span><i class="legend-dot sense"></i> ADC采样</span></div></div>
+        <div class="scene-frame" id="sceneFrame"><canvas id="glScene" aria-label="可拖动旋转缩放的三维测试治具"></canvas><canvas id="labelScene" aria-hidden="true"></canvas><div class="scene-badge" id="sceneStage">READY / 待机</div><div class="breakdown-pop" id="breakdownPop" hidden><b>⚡ BREAKDOWN</b><small>器件进入击穿 / 钳位区（模拟）</small></div><div class="axis-label">拖动旋转 · 滚轮缩放 · 双击重置视角</div><div class="scene-corner"><span class="line"></span> CCS → RELAY → DUT → AFE → MCU</div><div class="fallback" id="glFallback" hidden>当前浏览器无法使用 3D 硬件加速，尝试兼容渲染。</div></div>
+        <div class="scene-bottom"><div class="flow-item"><span class="flow-index">01</span>1mA恒流源</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">02</span>极性继电器</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">03</span>ESD / DIODE</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">04</span>AFE采样</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">05</span>MCU ADC</div></div>
+      </div>
+      <div class="panel chart-panel"><div class="panel-header"><div><div class="kicker">02 / VOLTAGE TRACE</div><h2>实时电压曲线 + 上下限线</h2></div><div class="chart-meta"><span class="chart-pip"></span> <span id="plotCaption">等待测试</span></div></div><div class="graph-wrap enhanced"><canvas id="waveChart" aria-label="正反向电压时间曲线及测试上下限线"></canvas></div><div class="chart-foot"><span><i class="legend-dot current"></i> +Vf <i class="legend-dot reverse-color"></i> −Vr</span><span class="tiny">虚线 = 规格上下限，横轴时间 s</span></div></div>
+      <div class="panel detail-panel"><div class="panel-header"><div><div class="kicker">03 / DIODE I–V CHARACTERISTIC</div><h2>电流–电压特性与击穿拐点</h2></div><span class="config-tag">动态工作点</span></div><div class="iv-wrap"><canvas id="ivChart" aria-label="二极管I-V特性及实时测量工作点"></canvas></div><div class="iv-caption" id="ivExplanation">双向TVS在正负两侧形成近似对称的击穿区。这里是教学近似曲线，不代替厂家数据手册。</div></div>
+    </section>
+    <aside class="right-side">
+      <div class="panel setting-panel"><div class="panel-header"><div><div class="kicker">04 / DEVICE & TEST CONFIG</div><h2>器件与测试条件</h2></div><span class="config-tag">D500</span></div>
+        <div class="fields"><label class="field"><span>选择二极管类型 <em>DUT</em></span><select id="deviceType">
+          <option value="esd">ESD245-B1-W0201 · 双向ESD（当前测试）</option><option value="tvs">双向TVS · 示意</option><option value="unidirectional">单向TVS · 示意</option><option value="zener">稳压二极管 Zener</option><option value="diode">普通硅整流二极管</option><option value="signal">小信号二极管</option><option value="schottky">肖特基二极管</option><option value="led">LED发光二极管</option><option value="photodiode">光电二极管</option>
+        </select></label><div class="device-note" id="deviceNote"></div>
+        <div class="field"><span class="field-label">故障注入 <em>用于观察FAIL / INVALID</em></span><select id="faultMode"><option value="normal">正常器件 / PASS</option><option value="low">低于下限（模拟）</option><option value="high">高于上限（模拟）</option><option value="short">器件短路（模拟）</option><option value="open">器件开路（模拟）</option></select></div>
+        <div class="range-field"><div class="range-head"><label for="testCurrent">恒流源电流设定</label><b id="currentValue">1.00 <small>mA</small></b></div><input id="testCurrent" type="range" min="0.2" max="5" step="0.1" value="1"><div class="range-poles"><span>0.2mA</span><span>5mA</span></div></div>
+        <div class="range-field"><div class="range-head"><label for="limitVoltage">恒流源顺从电压 / 限压</label><b id="limitValue">12.0 <small>V</small></b></div><input id="limitVoltage" type="range" min="2" max="15" step="0.5" value="12"><div class="range-poles"><span>2V</span><span>15V</span></div></div>
+        <div class="limits-head"><span>正向电压窗口 <em>带符号，单位V</em></span><span id="limitHint">依据截图ERS</span></div><div class="limit-fields"><label>Vf Min<input id="fMin" type="number" step="0.05" value="5.8"></label><label>Vf Max<input id="fMax" type="number" step="0.05" value="8.1"></label></div>
+        <div class="limits-head"><span>反向电压窗口 <em>带符号，单位V</em></span><span id="reverseHint">依据截图ERS</span></div><div class="limit-fields"><label>Vr Min<input id="rMin" type="number" step="0.05" value="-8.1"></label><label>Vr Max<input id="rMax" type="number" step="0.05" value="-5.8"></label></div>
+        <div class="speed-row"><label for="simSpeed">动画速度</label><select id="simSpeed"><option value="0.7">0.7×</option><option value="1" selected>1×</option><option value="1.7">1.7×</option><option value="2.5">2.5×</option></select></div>
+        <button class="preset-btn" id="restoreSpec">↺ 恢复选中器件的教学参数</button></div>
+        <div class="actions"><button class="btn btn-primary" id="runAuto">▶ 一键正反向自动测试</button><div class="actions-secondary"><button class="btn btn-outline" id="runForward">+ 正向</button><button class="btn btn-outline" id="runReverse">− 反向</button><button class="btn btn-ghost" id="resetBtn" title="停止并清空">↻</button></div></div>
+      </div>
+      <div class="panel readout-panel"><div class="panel-header"><div><div class="kicker">05 / LIVE MEASUREMENT</div><h2>仪表与 MCU 实时数据</h2></div><span class="status-pill idle" id="statusPill">待机 READY</span></div>
+        <div class="meter-primary"><div class="meter-title">DUT 测得电压 <span id="polarityText">未开始</span></div><div class="meter-number"><span id="voltageReading">+0.000</span><small>V</small></div><div class="meter-track"><div id="meterFill"></div></div><div class="meter-limit-text" id="currentWindow">当前合格范围 +5.8 ～ +8.1V</div></div>
+        <div class="meter-grid"><div><span>实际恒流</span><strong id="actualCurrent">0.0000 <small>mA</small></strong></div><div><span>ADC原始值</span><strong id="adcReading">0 <small>/ 1023</small></strong></div><div><span>AFE调理电压</span><strong id="afeReading">0.000 <small>V</small></strong></div><div><span>MCU反算电压</span><strong id="calcReading">0.000 <small>V</small></strong></div></div>
+        <div class="adc-subpanel"><div class="adc-head"><span>ADC 10-bit · Vref=3.3V · |VDUT|÷5</span><b id="sampleProgress">0 / 16</b></div><div class="sample-bars" id="sampleBars"></div><div class="adc-binary">ADC[9:0] <strong id="adcBinary">0000000000</strong> <span id="sampleAverage">等待采样均值</span></div><div class="adc-flow" id="adcFlow"><span data-flow="0">外部电压</span><i>›</i><span data-flow="1">AFE衰减</span><i>›</i><span data-flow="2">ADC量化</span><i>›</i><span data-flow="3">平均值</span><i>›</i><span data-flow="4">判断</span></div></div>
+        <div class="process-head">单片机测试状态机 <span id="stepText">等待指令</span></div><div class="steps"><div data-step="switch"><i>1</i><span>断流 / 切换继电器</span></div><div data-step="excite"><i>2</i><span>1mA 恒流激励</span></div><div data-step="sample"><i>3</i><span>ADC×16 采样平均</span></div><div data-step="judge"><i>4</i><span>上下限及电流校验</span></div></div>
+      </div>
+    </aside>
+  </main>
+  <section class="bottom-grid"><div class="panel result-panel"><div class="panel-header"><div><div class="kicker">06 / D500 RESULT REPORT</div><h2>正向与反向测试判定</h2></div><button class="text-btn" id="exportCsv">导出CSV结果</button></div><div class="table-scroll"><table><thead><tr><th>测试项</th><th>规定范围 (V)</th><th>恒流设定</th><th>实际电流</th><th>测量值 (V)</th><th>判定</th></tr></thead><tbody><tr id="forwardRow"><td><span class="dir-pill">D500_Vf</span></td><td class="spec-range">+5.8 ～ +8.1</td><td class="goal-current">1.00 mA</td><td class="got-current">—</td><td class="got-voltage">—</td><td class="got-result"><span class="result-empty">未测试</span></td></tr><tr id="reverseRow"><td><span class="dir-pill reverse">D500_Rf</span></td><td class="spec-range">−8.1 ～ −5.8</td><td class="goal-current">1.00 mA</td><td class="got-current">—</td><td class="got-voltage">—</td><td class="got-result"><span class="result-empty">未测试</span></td></tr></tbody></table></div><div class="report-summary" id="reportSummary">未测试。双向ESD采用截屏给定的上下限；12V是恒流源的最大输出能力，不代表器件上直接固定施加12V。</div></div>
+  <div class="panel log-panel"><div class="panel-header"><div><div class="kicker">07 / MCU UART LOG</div><h2>逐次采样与固件日志</h2></div><button class="text-btn" id="clearLog">清空日志</button></div><div id="eventLog" class="log-view" role="log" aria-live="polite"></div></div></section>
+  <footer class="footer"><div><b>基于截图的当前规格：</b>ESD245-B1-W0201 / D500_Vf +5.8～+8.1V；D500_Rf −8.1～−5.8V；标注条件为12V / 1mA。这里将12V理解为恒流源顺从电压上限，具体物理定义仍需核对ERS和器件手册。</div><div><b>仿真边界：</b>全部电压、电流、ADC与击穿特效是教学模拟，不是真实测量。普通二极管的反向1mA可能无法在12V内建立；显示 INVALID 而非伪造击穿值。实物需要隔离、防反灌、限压、保护与放电。</div></footer>
+</div>
+<script src="app.js" defer></script>
+</body>
+</html>

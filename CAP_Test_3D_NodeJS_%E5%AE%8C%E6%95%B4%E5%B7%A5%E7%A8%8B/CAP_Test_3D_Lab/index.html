@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#09151e">
+<title>CAP TEST 3D Lab · 直流恒流充放电实物仿真</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+  <div class="brand"><div class="logo">C<span>+</span></div><div><div class="eyebrow">INSTRUMENTATION / VIRTUAL LAB</div><h1>CAP TEST <span>3D 实物仿真</span></h1></div></div>
+  <div class="topbar-right"><span class="live-dot"></span><span>双向恒流激励 · DC CHARGE / DISCHARGE</span><span class="version">V2.0</span></div>
+</header>
+<section class="lead">
+  <div><div class="kicker">电容测量原理 / CAPACITANCE BY CONSTANT CURRENT</div><h2>让电容充放电的过程，<span>看得见。</span></h2><p>通过可调<strong>直流恒流激励源</strong>向被测电容注入或抽取恒定电流，同时用电压表采样端电压。观察粒子运动、电容电压指示与示波曲线联动，利用 <strong>ΔV / Δt</strong> 反推电容容量。</p></div>
+  <div class="formula-card"><div class="small-title">TEST EQUATION</div><div class="formula">C <span>=</span> <span class="fraction"><b>I × Δt</b><b>ΔV</b></span></div><div class="formula-hint">I = C × dV/dt <i></i> 适用于理想恒流阶段</div></div>
+</section>
+<main class="dashboard">
+  <div class="left-stack">
+    <section class="panel scene-panel">
+      <div class="panel-header"><div><div class="panel-overline">01 — INTERACTIVE 3D BENCH</div><h3>三维电容测试台</h3></div><div class="scene-status"><span class="pulse-dot"></span><span id="statusText">恒流充电中</span></div></div>
+      <div class="scene-wrap">
+        <canvas id="scene" aria-label="可旋转的 3D 测试台，包含直流恒流激励源、电容和电压表"></canvas>
+        <div class="scene-tags"><span><i class="tag-circle source"></i> DC 恒流激励源</span><span><i class="tag-circle dut"></i> 被测电容 Cx</span><span><i class="tag-circle meter"></i> 电压采样表</span></div>
+        <button class="camera-reset" id="cameraReset" type="button" title="恢复默认视角">↺ 复位视角</button>
+      </div>
+      <div class="telemetry-grid">
+        <div class="telemetry"><div class="tele-title">电容两端电压 <span>U<sub>c</sub></span></div><div class="tele-value mint"><span id="voltageReadout">0.000</span><small>V</small></div><div class="mini-progress"><div id="chargeProgress"></div></div></div>
+        <div class="telemetry"><div class="tele-title">激励源输出 <span>I<sub>out</sub></span></div><div class="tele-value"><span id="currentReadout">+2.00</span><small>mA</small></div><div class="tele-foot" id="slopeReadout">充电斜率 +2.000 V/s</div></div>
+        <div class="telemetry"><div class="tele-title">实验时间 <span>t</span></div><div class="tele-value"><span id="timeReadout">0.000</span><small>s</small></div><div class="tele-foot" id="phaseReadout">CHARGING · 注入电流</div></div>
+        <div class="telemetry"><div class="tele-title">储能 E = ½ C U²</div><div class="tele-value"><span id="energyReadout">0.00</span><small>mJ</small></div><div class="tele-foot">绿色亮环表示电压水平</div></div>
+      </div>
+    </section>
+    <section class="panel source-panel">
+      <div class="panel-header compact"><div><div class="panel-overline">02 — INSTRUMENT CONTROL</div><h3>恒流激励源 · 参数设置</h3></div><span class="small-badge">PROGRAMMABLE CC</span></div>
+      <div class="instrument-head"><div class="instrument-icon">I<br><small>DC</small></div><div><strong>双向可编程直流恒流源</strong><p>充电时输出 +I，放电时抽取 −I，自动保持相同电流幅值。</p></div><span class="output-state" id="outputBadge">OUTPUT ON</span></div>
+      <div class="controls-grid">
+        <label class="control"><span>激励电流 I <strong id="currentSetting">2.0 mA</strong></span><input type="range" id="currentSlider" min="0.2" max="10" step="0.2" value="2"><small>0.2 mA <span>10.0 mA</span></small></label>
+        <label class="control"><span>被测电容 Cx <strong id="capSetting">1000 µF</strong></span><input type="range" id="capSlider" min="100" max="4700" step="100" value="1000"><small>100 µF <span>4700 µF</span></small></label>
+        <label class="control"><span>仿真播放速度 <strong id="speedSetting">1×</strong></span><input type="range" id="speedSlider" min="0" max="4" step="1" value="1"><small>0.5× <span>10×</span></small></label>
+        <label class="control"><span>电源电压上限 <strong id="limitSetting">12 V</strong></span><input type="range" id="limitSlider" min="5" max="24" step="1" value="12"><small>5 V <span>24 V</span></small></label>
+      </div>
+      <div class="buttons"><button id="playBtn" class="btn primary" type="button">Ⅱ 暂停仿真</button><button id="resetBtn" class="btn secondary" type="button">↺ 重新测试</button><button id="reverseBtn" class="btn secondary" type="button">⇄ 切换充/放电</button><label class="toggle"><input type="checkbox" id="loopCheck" checked><span class="toggle-track"></span><span>自动循环</span></label></div>
+      <div class="instruction"><span>i</span> 源电压上限为理想恒流源的合规电压（compliance）设定；本演示的最高充电电压固定为 <b>4.2 V</b>，调整电流或电容将重启测量。</div>
+    </section>
+  </div>
+  <div class="right-stack">
+    <section class="panel chart-panel">
+      <div class="panel-header"><div><div class="panel-overline">03 — OSCILLOSCOPE / Uc(t)</div><h3>实时充放电曲线</h3></div><div class="live-indicator"><span></span> LIVE</div></div>
+      <div class="scope-summary"><span><b id="slopeBadge">+2.000</b> V/s</span><span>采样窗口 <strong>1.0 → 3.0 V</strong></span></div>
+      <div class="chart-holder"><canvas id="chart" role="img" aria-label="电容电压随时间变化曲线和 1 V、3 V 采样标记"></canvas></div>
+      <div class="chart-legend"><span><i class="line-green"></i> 充电段</span><span><i class="line-orange"></i> 放电段</span><span><i class="dot-a"></i> 1.0 V / t₁</span><span><i class="dot-b"></i> 3.0 V / t₂</span></div>
+    </section>
+    <section class="panel result-panel">
+      <div class="panel-header compact"><div><div class="panel-overline">04 — ADC SAMPLING</div><h3>测量采样与电容计算</h3></div><span id="measurementBadge" class="result-badge">等待 A 点</span></div>
+      <div class="timeline"><div class="time-point"><div class="point-dot">A</div><div><small>起点阈值 / 1.000 V</small><strong id="t1Readout">—</strong></div></div><div class="time-connector">Δt</div><div class="time-point"><div class="point-dot b">B</div><div><small>终点阈值 / 3.000 V</small><strong id="t2Readout">—</strong></div></div></div>
+      <div class="calculation-grid"><div><span>电流 I</span><b id="calcI">2.000 mA</b></div><div><span>电压差 ΔV</span><b>2.000 V</b></div><div><span>时间差 Δt</span><b id="calcDT">—</b></div><div><span>理论充电斜率</span><b id="calcSlope">2.000 V/s</b></div></div>
+      <div class="equation-line" id="equationLine">C(µF) = 1000 × I(mA) × Δt(s) / ΔV(V)</div>
+      <div class="result-hero"><div><small>CAPACITANCE RESULT</small><div>测得电容 Cx</div></div><div><b id="resultCap">—</b> <span>µF</span></div></div>
+      <div class="test-info" id="resultText">开始充电，等待电容电压越过第一个采样点 1.0 V。</div>
+    </section>
+    <section class="panel steps-panel"><div class="panel-overline">05 — EXPERIMENT SEQUENCE</div><h3>一次 CAP Test 的实际步骤</h3><div class="steps"><div><b>01</b><strong>探针连接</strong><span>夹具将激励源和电压表并接至 Cx 两端。</span></div><div><b>02</b><strong>恒流充电</strong><span>电流 I 恒定，电容电压以 I/C 斜率上升。</span></div><div><b>03</b><strong>ADC 记录</strong><span>越过 1 V、3 V 时分别记下 t₁、t₂。</span></div><div><b>04</b><strong>计算并放电</strong><span>C = IΔt/ΔV，随后受控放电归零。</span></div></div></section>
+  </div>
+</main>
+<footer><strong>仿真边界</strong>：真实外形的教学 3D 模型，非实测数据。假设理想双向恒流源、理想电容、理想电压采样，未模拟 ESR、漏电流、寄生参数、接线阻抗、ADC 误差和实际电源切换瞬态。可见光点表示约定电流，不表示电荷穿过电容介质。<span> · 100% 本地运行，无 CDN 依赖。</span></footer>
+</div>
+<script src="./renderer3d.js"></script><script src="./app.js"></script>
+</body>
+</html>

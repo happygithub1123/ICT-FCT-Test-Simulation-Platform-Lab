@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#09151e">
+<title>CAP TEST 3D Lab · STM32 ADC 处理流程演示</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+  <div class="brand"><div class="logo">C<span>+</span></div><div><div class="eyebrow">INSTRUMENTATION / VIRTUAL LAB</div><h1>CAP TEST <span>3D 实物 + STM32 处理流程</span></h1></div></div>
+  <div class="topbar-right"><span class="live-dot"></span><span>双向恒流激励 · ADC 采集 · MCU 计算</span><span class="version">V3.0</span></div>
+</header>
+<section class="lead">
+  <div><div class="kicker">电容测量原理 / CAPACITANCE BY CONSTANT CURRENT</div><h2>不仅看见充放电，<span>还看见 STM32 在做什么。</span></h2><p>通过可调<strong>直流恒流激励源</strong>向被测电容注入或抽取恒定电流，同时用<strong>STM32 定时触发 ADC</strong>采样电容端电压。系统在 1.0 V 和 3.0 V 两个阈值处记录 t₁、t₂，再由 MCU 根据 <strong>C = I × Δt / ΔV</strong> 自动计算电容值，并可视化显示整个内部处理过程。</p></div>
+  <div class="formula-card"><div class="small-title">TEST EQUATION</div><div class="formula">C <span>=</span> <span class="fraction"><b>I × Δt</b><b>ΔV</b></span></div><div class="formula-hint">I = C × dV/dt <i></i> STM32 在阈值采样窗口内完成计时与运算</div></div>
+</section>
+<main class="dashboard">
+  <div class="left-stack">
+    <section class="panel scene-panel">
+      <div class="panel-header"><div><div class="panel-overline">01 — INTERACTIVE 3D BENCH</div><h3>三维电容测试台</h3></div><div class="scene-status"><span class="pulse-dot"></span><span id="statusText">恒流充电中</span></div></div>
+      <div class="scene-wrap">
+        <canvas id="scene" aria-label="可旋转的 3D 测试台，包含直流恒流激励源、电容和电压表"></canvas>
+        <div class="scene-tags"><span><i class="tag-circle source"></i> DC 恒流激励源</span><span><i class="tag-circle dut"></i> 被测电容 Cx</span><span><i class="tag-circle meter"></i> 电压采样表</span></div>
+        <button class="camera-reset" id="cameraReset" type="button" title="恢复默认视角">↺ 复位视角</button>
+      </div>
+      <div class="telemetry-grid">
+        <div class="telemetry"><div class="tele-title">电容两端电压 <span>U<sub>c</sub></span></div><div class="tele-value mint"><span id="voltageReadout">0.000</span><small>V</small></div><div class="mini-progress"><div id="chargeProgress"></div></div></div>
+        <div class="telemetry"><div class="tele-title">激励源输出 <span>I<sub>out</sub></span></div><div class="tele-value"><span id="currentReadout">+2.00</span><small>mA</small></div><div class="tele-foot" id="slopeReadout">充电斜率 +2.000 V/s</div></div>
+        <div class="telemetry"><div class="tele-title">实验时间 <span>t</span></div><div class="tele-value"><span id="timeReadout">0.000</span><small>s</small></div><div class="tele-foot" id="phaseReadout">CHARGING · 注入电流</div></div>
+        <div class="telemetry"><div class="tele-title">储能 E = ½ C U²</div><div class="tele-value"><span id="energyReadout">0.00</span><small>mJ</small></div><div class="tele-foot">绿色亮环表示电压水平</div></div>
+      </div>
+    </section>
+    <section class="panel source-panel">
+      <div class="panel-header compact"><div><div class="panel-overline">02 — INSTRUMENT CONTROL</div><h3>恒流激励源 · 参数设置</h3></div><span class="small-badge">PROGRAMMABLE CC</span></div>
+      <div class="instrument-head"><div class="instrument-icon">I<br><small>DC</small></div><div><strong>双向可编程直流恒流源</strong><p>充电时输出 +I，放电时抽取 −I，自动保持相同电流幅值。STM32 通过分压 + ADC 读取电容端电压。</p></div><span class="output-state" id="outputBadge">OUTPUT ON</span></div>
+      <div class="controls-grid">
+        <label class="control"><span>激励电流 I <strong id="currentSetting">2.0 mA</strong></span><input type="range" id="currentSlider" min="0.2" max="10" step="0.2" value="2"><small>0.2 mA <span>10.0 mA</span></small></label>
+        <label class="control"><span>被测电容 Cx <strong id="capSetting">1000 µF</strong></span><input type="range" id="capSlider" min="100" max="4700" step="100" value="1000"><small>100 µF <span>4700 µF</span></small></label>
+        <label class="control"><span>仿真播放速度 <strong id="speedSetting">1×</strong></span><input type="range" id="speedSlider" min="0" max="4" step="1" value="1"><small>0.5× <span>10×</span></small></label>
+        <label class="control"><span>电源电压上限 <strong id="limitSetting">12 V</strong></span><input type="range" id="limitSlider" min="5" max="24" step="1" value="12"><small>5 V <span>24 V</span></small></label>
+      </div>
+      <div class="buttons"><button id="playBtn" class="btn primary" type="button">Ⅱ 暂停仿真</button><button id="resetBtn" class="btn secondary" type="button">↺ 重新测试</button><button id="reverseBtn" class="btn secondary" type="button">⇄ 切换充/放电</button><label class="toggle"><input type="checkbox" id="loopCheck" checked><span class="toggle-track"></span><span>自动循环</span></label></div>
+      <div class="instruction"><span>i</span> 模拟对象：<b>STM32F103 + ADC1</b>。假设电容端电压先经分压网络缩放到 ADC 量程内，再由定时器周期触发 ADC 采样，软件比较阈值、记录时间并计算电容值。</div>
+    </section>
+  </div>
+  <div class="right-stack">
+    <section class="panel chart-panel">
+      <div class="panel-header"><div><div class="panel-overline">03 — OSCILLOSCOPE / Uc(t)</div><h3>实时充放电曲线</h3></div><div class="live-indicator"><span></span> LIVE</div></div>
+      <div class="scope-summary"><span><b id="slopeBadge">+2.000</b> V/s</span><span>采样窗口 <strong>1.0 → 3.0 V</strong></span></div>
+      <div class="chart-holder"><canvas id="chart" role="img" aria-label="电容电压随时间变化曲线和 1 V、3 V 采样标记"></canvas></div>
+      <div class="chart-legend"><span><i class="line-green"></i> 充电段</span><span><i class="line-orange"></i> 放电段</span><span><i class="dot-a"></i> 1.0 V / t₁</span><span><i class="dot-b"></i> 3.0 V / t₂</span></div>
+    </section>
+    <section class="panel result-panel">
+      <div class="panel-header compact"><div><div class="panel-overline">04 — ADC SAMPLING</div><h3>测量采样与电容计算</h3></div><span id="measurementBadge" class="result-badge">等待 A 点</span></div>
+      <div class="timeline"><div class="time-point"><div class="point-dot">A</div><div><small>起点阈值 / 1.000 V</small><strong id="t1Readout">—</strong></div></div><div class="time-connector">Δt</div><div class="time-point"><div class="point-dot b">B</div><div><small>终点阈值 / 3.000 V</small><strong id="t2Readout">—</strong></div></div></div>
+      <div class="calculation-grid"><div><span>电流 I</span><b id="calcI">2.000 mA</b></div><div><span>电压差 ΔV</span><b>2.000 V</b></div><div><span>时间差 Δt</span><b id="calcDT">—</b></div><div><span>理论充电斜率</span><b id="calcSlope">2.000 V/s</b></div></div>
+      <div class="equation-line" id="equationLine">C(µF) = 1000 × I(mA) × Δt(s) / ΔV(V)</div>
+      <div class="result-hero"><div><small>CAPACITANCE RESULT</small><div>测得电容 Cx</div></div><div><b id="resultCap">—</b> <span>µF</span></div></div>
+      <div class="test-info" id="resultText">开始充电，等待电容电压越过第一个采样点 1.0 V。</div>
+    </section>
+
+    <section class="panel mcu-panel">
+      <div class="panel-header compact"><div><div class="panel-overline">05 — STM32 INTERNAL PROCESS</div><h3>STM32 + ADC 处理流程可视化</h3></div><span class="small-badge stm-badge">ADC1 / TIM1 / UART</span></div>
+      <div class="mcu-3d-stage">
+        <canvas id="mcu3d" aria-label="可拖动旋转缩放的 STM32F103C8T6 LQFP48 3D 电路板模型，ADC、定时器、结果串口信号同步演示"></canvas>
+        <div class="mcu-3d-toolbar"><span><i class="tag-circle meter"></i> ADC 模拟信号</span><span><i class="tag-circle dut"></i> TIM 采样时钟</span><span><i class="tag-circle source"></i> UART 结果数据</span></div>
+        <button type="button" id="mcuCameraReset" class="camera-reset" title="恢复 MCU 的默认 3D 视角">↺ MCU 视角复位</button>
+        <div class="mcu3d-corner">STM32F103C8T6 · LQFP48 · PCB + 信号动画 · 拖动旋转 / 滚轮缩放</div>
+      </div>
+      <div class="mcu-lab">
+        <div class="chip-stage">
+          <div class="chip-node source-node" id="nodeDivider"><small>分压 / RC</small><b>PA0 / ADC1_IN0</b><span>Uc → Uadc</span></div>
+          <div class="flow-link horizontal l1" id="linkDividerAdc"></div>
+          <div class="chip-shell" id="chipShell">
+            <div class="chip-top">
+              <div class="chip-title">STM32F103C8T6</div>
+              <div class="chip-sub">72MHz · 12-bit ADC · Timer Trigger</div>
+            </div>
+            <div class="chip-body" id="chipBody">
+              <span class="pin p1"></span><span class="pin p2"></span><span class="pin p3"></span><span class="pin p4"></span><span class="pin p5"></span><span class="pin p6"></span>
+              <span class="pin r1"></span><span class="pin r2"></span><span class="pin r3"></span><span class="pin r4"></span><span class="pin r5"></span><span class="pin r6"></span>
+              <div class="chip-core-glow"></div>
+              <div class="chip-center-text">ADC SAMPLE<br>TIMER CAPTURE<br>CAP CALC</div>
+            </div>
+          </div>
+          <div class="flow-link horizontal l2" id="linkAdcCalc"></div>
+          <div class="chip-node calc-node" id="nodeCalc"><small>固件运算</small><b>ΔV/Δt → C</b><span>Threshold + Time Capture</span></div>
+          <div class="flow-link vertical up1" id="linkTimer"></div>
+          <div class="trigger-node" id="nodeTimer"><small>定时触发</small><b>TIM1 1ms</b></div>
+          <div class="flow-link vertical down1" id="linkUart"></div>
+          <div class="output-node" id="nodeOutput"><small>结果输出</small><b>UART / LCD</b><span id="uartPacket">Cx=---- uF</span></div>
+        </div>
+        <div class="mcu-right">
+          <div class="mcu-registers">
+            <div><span>ADC 输入 Uadc</span><b id="adcVoltage">0.000 V</b></div>
+            <div><span>ADC 数码值</span><b id="adcCode">0 / 4095</b></div>
+            <div><span>采样周期</span><b id="samplePeriod">1.00 ms</b></div>
+            <div><span>样本序号</span><b id="sampleIndex">0</b></div>
+            <div><span>比较状态</span><b id="thresholdState">等待 A 点</b></div>
+            <div><span>当前任务</span><b id="firmwareTask">Timer Trigger</b></div>
+          </div>
+          <div class="firmware-seq" id="firmwareSeq">
+            <div class="fw-step" data-step="1"><b>1</b><div><strong>TIM1 触发</strong><span>每 1 ms 产生采样节拍</span></div></div>
+            <div class="fw-step" data-step="2"><b>2</b><div><strong>ADC1 采样</strong><span>读取经分压后的电容电压</span></div></div>
+            <div class="fw-step" data-step="3"><b>3</b><div><strong>阈值比较</strong><span>判断是否达到 1.0 V / 3.0 V</span></div></div>
+            <div class="fw-step" data-step="4"><b>4</b><div><strong>记录 t₁ / t₂</strong><span>锁存时间点，计算 Δt</span></div></div>
+            <div class="fw-step" data-step="5"><b>5</b><div><strong>换算电容值</strong><span>C = I × Δt / ΔV</span></div></div>
+            <div class="fw-step" data-step="6"><b>6</b><div><strong>串口/屏幕输出</strong><span>显示结果并进入放电</span></div></div>
+          </div>
+          <div class="code-card">
+            <div class="small-title">FIRMWARE PSEUDOCODE</div>
+            <pre id="codeSnippet">1. TIM1 1ms 中断
+2. 触发 ADC1 采样 Uadc
+3. Uc = Uadc / Kdiv
+4. if Uc >= 1.0V 记录 t1
+5. if Uc >= 3.0V 记录 t2
+6. C = I * (t2 - t1) / 2.0V
+7. 串口输出电容结果</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel steps-panel"><div class="panel-overline">06 — EXPERIMENT SEQUENCE</div><h3>一次 CAP Test 的实际步骤</h3><div class="steps"><div><b>01</b><strong>探针连接</strong><span>夹具将恒流激励源与电压采样网络并接至 Cx 两端。</span></div><div><b>02</b><strong>恒流充电</strong><span>电流 I 恒定，电容电压以 I/C 斜率上升。</span></div><div><b>03</b><strong>ADC 连续采样</strong><span>STM32 通过 TIM1 周期触发 ADC1，持续观察 Uc。</span></div><div><b>04</b><strong>阈值锁存</strong><span>越过 1 V、3 V 时分别记录 t₁、t₂。</span></div><div><b>05</b><strong>计算与显示</strong><span>MCU 执行 C = IΔt/ΔV，输出结果并受控放电归零。</span></div></div></section>
+  </div>
+</main>
+<footer><strong>仿真边界</strong>：真实外形的教学 3D 模型，非实测数据。假设理想双向恒流源、理想电容、理想分压电阻和 12-bit ADC 量化；按固定 1ms 采样节拍判定阈值。未模拟 ESR、漏电流、ADC 噪声、DMA 中断延迟、采样保持电容、寄生参数与实际切换瞬态。<span> · 100% 本地运行，无 CDN 依赖。</span></footer>
+</div>
+<script src="./renderer3d.js"></script><script src="./app.js"></script>
+</body>
+</html>

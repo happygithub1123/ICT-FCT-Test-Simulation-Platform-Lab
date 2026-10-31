@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090e18" />
+  <title>DiodeLab 3D | FCT 二极管 / 双向 TVS 恒流测试仿真</title>
+  <style>
+:root{--bg:#090e18;--panel:#101927;--panel-hi:#151f30;--line:#233149;--text:#e7effd;--muted:#8797ae;--cyan:#4bd1ef;--blue:#3c89fa;--lime:#60e8b0;--orange:#f4b667;--red:#ff7183;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+*{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:radial-gradient(1100px 480px at 47% -190px,#20364e 5%,transparent 80%),var(--bg);color:var(--text);font-family:Inter,"Microsoft YaHei","PingFang SC",system-ui,-apple-system,sans-serif;min-width:320px}button,input,select{font:inherit}button{cursor:pointer}.shell{max-width:1570px;padding:0 30px 45px;margin:auto}.topbar{display:flex;align-items:center;justify-content:space-between;height:83px;border-bottom:1px solid #1a2738}.brandmark{display:flex;gap:11px;align-items:center;font-size:23px;font-weight:800;letter-spacing:-.6px}.brandmark .brandicon{font-size:31px;color:var(--cyan);transform:rotate(15deg)}.brandmark small{font-size:9px;display:block;color:#6d829a;letter-spacing:2.2px;margin-top:-1px}.highlight{color:var(--cyan)}.topmeta{display:flex;gap:10px}.top-chip{color:#b4c5d8;border:1px solid #24405b;border-radius:7px;padding:8px 12px;font-size:11px;font-weight:600}.top-chip.muted{border-color:#283041;color:#74879c}.live-dot{display:inline-block;width:7px;height:7px;background:#60e8b0;box-shadow:0 0 12px #60e8b0;border-radius:50%;margin-right:6px}.intro{display:flex;justify-content:space-between;align-items:center;padding:32px 0 25px}.eyebrow,.kicker{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:2.1px;color:#55bfe2}.intro h1{font-weight:800;font-size:clamp(26px,3vw,40px);margin:7px 0 8px;letter-spacing:1px}.intro h1 span{color:#6fcce6}.intro p{margin:0;font-size:13px;color:#95a8c2}.mode-note{align-self:center;padding:11px 16px;border:1px solid #2c3b51;border-radius:9px;font-size:12px;color:#b9c8d8;white-space:nowrap}.mode-note span{display:block;font-size:10px;color:#d5aa6b;text-align:center;margin-top:3px}.workspace{display:grid;grid-template-columns:minmax(0,1.59fr) minmax(350px,0.98fr);gap:18px}.left-side,.right-side{display:flex;flex-direction:column;gap:18px;min-width:0}.panel{border:1px solid #27354a;background:linear-gradient(145deg,#121e2e,#101722);border-radius:13px;box-shadow:0 20px 55px #0001;overflow:hidden}.panel-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 15px;gap:10px}.panel-header h2{font-size:16px;font-weight:700;margin:4px 0 0;letter-spacing:.25px}.legend{display:flex;gap:15px;white-space:nowrap}.legend span,.chart-foot{font-size:11px;color:#8a9cb5}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}.legend-dot.current{background:#4bcbeb;box-shadow:0 0 8px #4bcbeb66}.legend-dot.sense{background:#ecae65}.scene-frame{height:412px;position:relative;background:radial-gradient(650px 420px at 51% 50%,#1b3145 0%,#101b2b 49%,#080f1b 92%);overflow:hidden;touch-action:none;cursor:grab}.scene-frame:active{cursor:grabbing}.scene-frame canvas{width:100%;height:100%;position:absolute;inset:0;display:block}.scene-frame canvas#labelScene{pointer-events:none}.scene-badge{position:absolute;top:15px;left:17px;border:1px solid #30506b;background:#101d2ade;padding:8px 12px;font:700 11px var(--mono);color:#60d8f5;border-radius:7px;box-shadow:0 4px 30px #0006}.axis-label{position:absolute;bottom:15px;right:16px;padding:7px 10px;color:#9db2cd;font-size:10px;border-radius:4px;background:#0b1720a6;pointer-events:none}.scene-corner{position:absolute;bottom:17px;left:18px;color:#718ba2;font:600 9px var(--mono);letter-spacing:1.2px}.scene-corner .line{display:inline-block;width:16px;height:1px;background:#70d5f5;vertical-align:middle;margin-right:5px}.fallback{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:85%;text-align:center;background:#1e2533;padding:18px;border-radius:9px;pointer-events:none}.scene-bottom{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:9px;padding:16px 10px;border-top:1px solid #26334a;background:#101c2b}.flow-item{color:#becddd;font-size:11px;white-space:nowrap}.flow-index{font:700 10px var(--mono);color:var(--cyan);margin-right:5px}.flow-arrow{color:#466079}.chart-panel .panel-header{padding-bottom:2px}.chart-meta{font-size:11px;color:#9cb0c7}.chart-pip{display:inline-block;width:6px;height:6px;border-radius:50%;background:#50d7f1;margin-right:4px}.graph-wrap{position:relative;height:212px;padding:9px 18px 0}.graph-wrap canvas{display:block;width:100%;height:100%}.chart-foot{display:flex;justify-content:space-between;border-top:1px solid #1e2b40;padding:11px 21px}.tiny{font-size:10px;color:#6e839d}.config-tag{font:700 10px var(--mono);letter-spacing:1px;color:#a9bbcd;border:1px solid #304055;border-radius:5px;padding:6px 8px}.fields{padding:0 20px 5px}.field{display:block}.field>span,.limits-head,.speed-row label{font-size:12px;font-weight:650;color:#b7c8db}.field em,.limits-head em{font:400 10px var(--mono);color:#607b97;margin-left:5px}select,input[type=number]{background:#0b1422;border:1px solid #314058;border-radius:7px;color:#dae9fa;outline:none}select:focus,input[type=number]:focus{border-color:#48bedd;box-shadow:0 0 0 2px #47bedd24}.field select{width:100%;padding:11px 12px;font-size:12px;margin-top:9px}.range-field{margin-top:20px}.range-head,.range-poles{display:flex;justify-content:space-between;align-items:center}.range-head label{font-size:12px;font-weight:600;color:#b7c8db}.range-head b{font:700 17px var(--mono);color:#d6f0ff}.range-head b small{font-size:11px;color:#80a2bb}input[type=range]{width:100%;accent-color:#49bced;cursor:pointer;margin:14px 0 2px}.range-poles{font:10px var(--mono);color:#697f98}.limits-head{display:flex;justify-content:space-between;align-items:center;margin-top:20px}.limits-head #limitHint{color:#668ca4;font-size:10px;font-weight:400}.limit-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:9px}.limit-fields label{color:#869bb2;font-size:10px}.limit-fields input{display:block;margin-top:6px;width:100%;padding:10px 12px;font:700 14px var(--mono)}.speed-row{display:flex;justify-content:space-between;align-items:center;margin:18px 0 15px}.speed-row select{width:125px;padding:8px}.actions{padding:10px 20px 20px}.btn{border:none;border-radius:8px;font-size:12px;font-weight:700;transition:filter .2s,transform .12s;min-height:41px}.btn:active{transform:translateY(1px)}.btn:disabled{cursor:not-allowed;filter:grayscale(1);opacity:.55}.btn-primary{width:100%;color:#061321;background:linear-gradient(95deg,#51caee,#2f96f1);font-size:14px;box-shadow:0 8px 20px #2589db25}.btn-primary:hover{filter:brightness(1.1)}.btn-primary span{margin-right:6px}.actions-secondary{display:flex;gap:9px;margin-top:9px}.btn-outline{flex:1;background:#172a3f;color:#bfdced;border:1px solid #35506b}.btn-ghost{width:41px;background:#1b2636;color:#94abc2;border:1px solid #2b3b52;font-size:22px}.meter-primary{margin:0 19px;padding:17px 18px;background:linear-gradient(145deg,#0b1b2b,#0e2335);border:1px solid #26506b;border-radius:10px}.meter-title{display:flex;justify-content:space-between;font-size:11px;color:#96b6ca}.meter-title span{font-size:10px;color:#6cd6ef}.meter-number{padding:9px 0 13px;display:flex;align-items:baseline;gap:10px;font:750 43px var(--mono);color:#68e3ff;letter-spacing:-1.8px;text-shadow:0 0 25px #37a9d855}.meter-number small{font:600 17px var(--mono);color:#85bdd1}.meter-track{height:5px;border-radius:4px;background:#1b4153;overflow:hidden}.meter-track>div{height:100%;width:0;background:linear-gradient(90deg,#2586ec,#52edee);border-radius:4px;transition:width .14s}.meter-grid{margin:15px 20px;display:grid;grid-template-columns:1fr 1fr;gap:11px}.meter-grid>div{background:#111e2e;border:1px solid #21354a;border-radius:8px;padding:11px}.meter-grid span{display:block;color:#7996ae;font-size:10px;margin-bottom:7px}.meter-grid strong{font:700 16px var(--mono);color:#e5eefb}.meter-grid strong small{font:500 10px var(--mono);color:#7995b4}.process-head{margin:3px 20px 10px;display:flex;justify-content:space-between;color:#b2c4d8;font-size:12px;font-weight:700}.process-head span{font-size:10px;font-weight:400;color:#69bddb}.steps{margin:0 20px 18px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.steps>div{display:flex;gap:8px;align-items:center;border:1px solid #2c3b4c;border-radius:7px;padding:8px 7px;font-size:10px;color:#8299b1}.steps i{font:700 10px var(--mono);font-style:normal;display:grid;place-items:center;min-width:21px;height:21px;border-radius:50%;background:#26374a}.steps>div.active{border-color:#2abfe1;background:#11324b;color:#d4faff}.steps>div.active i{background:#2b9fca;color:#fff}.steps>div.done{border-color:#245949;color:#87d1b3}.steps>div.done i{background:#21604f;color:#d6fff1}.status-pill{border-radius:14px;font:700 10px var(--mono);padding:7px 10px;white-space:nowrap}.status-pill.idle{background:#2a3646;color:#9bafc8}.status-pill.running{background:#153a50;color:#6ce3f4}.status-pill.pass{background:#194b3b;color:#6aebac}.status-pill.fail{background:#562b37;color:#ff8992}.status-pill.invalid{background:#5a4121;color:#ffd087}.bottom-grid{display:grid;grid-template-columns:minmax(0,1.59fr) minmax(350px,.98fr);gap:18px;margin-top:18px}.table-scroll{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}th{text-align:left;font-size:10px;font-weight:600;color:#7794ad;background:#0d1929;padding:12px 19px}td{border-bottom:1px solid #243246;padding:15px 19px;color:#d1e1f2;font-family:var(--mono)}td:first-child{font-family:inherit}.dir-pill{display:inline-block;color:#5ce2f7;background:#173951;border-radius:5px;padding:5px 8px;font-size:11px;font-weight:650}.dir-pill.reverse{color:#f0c280;background:#3b3028}.result-empty{color:#7a91a8}.result-pass{color:#5ce4a3;font-weight:750}.result-fail{color:#fc7990;font-weight:750}.result-invalid{color:#ffcd82;font-weight:700}.report-summary{font-size:11px;line-height:1.75;color:#8b9eb6;padding:12px 19px}.log-panel .panel-header{padding-bottom:12px}.text-btn{background:none;border:0;color:#7bbfdd;font-size:11px}.log-view{height:183px;overflow-y:auto;background:#0b1320;margin:0 18px 18px;padding:9px 11px;border:1px solid #1c3045;border-radius:8px;font:11px/1.75 var(--mono)}.logline{display:flex;gap:8px}.logtime{color:#5e768d;white-space:nowrap}.logmsg{color:#a6c9d8}.logline.ok .logmsg{color:#63e2ae}.logline.warn .logmsg{color:#ffca83}.logline.err .logmsg{color:#ff8091}.footer{margin:21px 0 0;border-top:1px solid #223046;padding-top:15px;display:grid;gap:5px;color:#768ca3;font-size:11px;line-height:1.8}.footer b{color:#9cbbce}@media (max-width:1120px){.workspace,.bottom-grid{grid-template-columns:1fr}.right-side{display:grid;grid-template-columns:1fr 1fr}.setting-panel,.readout-panel{height:auto}.scene-frame{height:420px}.bottom-grid{margin-top:18px}}@media (max-width:700px){.shell{padding:0 12px 24px}.topbar{height:65px}.topmeta .muted{display:none}.top-chip{font-size:10px}.intro{padding:23px 2px 20px}.intro h1{font-size:27px}.intro p{line-height:1.7}.mode-note{display:none}.right-side{grid-template-columns:1fr}.panel-header{padding:15px}.panel-header h2{font-size:14px}.scene-frame{height:328px}.scene-bottom{gap:5px}.flow-item{font-size:9px}.flow-index{font-size:8px}.flow-arrow{font-size:10px}.legend{gap:6px}.legend span{font-size:9px}.meter-number{font-size:39px}.bottom-grid{grid-template-columns:minmax(0,1fr)}.log-view{height:182px}}
+
+</style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brandmark"><span class="brandicon">◈</span><span>Diode<span class="highlight">Lab</span><small>FCT / ELECTRONICS SIMULATOR</small></span></div>
+      <div class="topmeta"><span class="top-chip"><span class="live-dot"></span> 3D · 实时仿真</span><span class="top-chip muted">HTML + JavaScript · 纯离线</span></div>
+    </header>
+    <section class="intro">
+      <div><div class="eyebrow">TEST BENCH / DI-03</div><h1>二极管 <span>双向恒流测试</span></h1><p>1mA 恒流激励 · 继电器极性切换 · ADC 电压采样 · 正反向特性 · 自动合格判定</p></div>
+      <div class="mode-note">工程教学仿真 <span>不是实物采集</span></div>
+    </section>
+    <main class="workspace">
+      <section class="left-side">
+        <div class="panel scene-panel">
+          <div class="panel-header"><div><div class="kicker">01 / HARDWARE OVERVIEW</div><h2>3D 测试硬件平台</h2></div><div class="legend"><span><i class="legend-dot current"></i> 恒流路径</span><span><i class="legend-dot sense"></i> 采样路径</span></div></div>
+          <div class="scene-frame" id="sceneFrame">
+            <canvas id="glScene" aria-label="可旋转的3D测试板模型"></canvas>
+            <canvas id="labelScene" aria-hidden="true"></canvas>
+            <div class="scene-badge" id="sceneStage">READY / 待机</div>
+            <div class="axis-label">拖拽旋转 · 滚轮缩放 · 双击复位视角</div>
+            <div class="scene-corner"><span class="line"></span> MCU / CCS / RELAY / DUT / ADC</div>
+            <div class="fallback" id="glFallback" hidden>当前浏览器未启用 WebGL 3D。请使用 Chrome / Edge，并开启硬件加速。</div>
+          </div>
+          <div class="scene-bottom"><div class="flow-item"><span class="flow-index">01</span>恒流源</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">02</span>极性继电器</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">03</span>被测器件</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">04</span>AFE + ADC</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">05</span>MCU 判定</div></div>
+        </div>
+        <div class="panel chart-panel">
+          <div class="panel-header"><div><div class="kicker">02 / ACQUISITION</div><h2>ADC 电压采集曲线</h2></div><div class="chart-meta"><span class="chart-pip"></span> <span id="plotCaption">等待开始采样</span></div></div>
+          <div class="graph-wrap"><canvas id="waveChart" aria-label="实时二极管电压时间曲线"></canvas></div>
+          <div class="chart-foot"><span><i class="legend-dot current"></i> DUT 电压 V(t)</span><span class="tiny">横轴：时间 s · 纵轴：电压 V</span></div>
+        </div>
+      </section>
+      <aside class="right-side">
+        <div class="panel setting-panel">
+          <div class="panel-header"><div><div class="kicker">03 / PARAMETERS</div><h2>测试参数设置</h2></div><span class="config-tag">CONFIG</span></div>
+          <div class="fields">
+            <label class="field"><span>器件类型 <em>DUT</em></span><select id="deviceType"><option value="tvs">双向 TVS（教学示意模型）</option><option value="diode">普通硅二极管（示意模型）</option></select></label>
+            <div class="range-field"><div class="range-head"><label for="testCurrent">恒流源设定</label><b id="currentValue">1.00 <small>mA</small></b></div><input type="range" id="testCurrent" min="0.2" max="5" step="0.1" value="1"><div class="range-poles"><span>0.2 mA</span><span>5 mA</span></div></div>
+            <div class="range-field"><div class="range-head"><label for="limitVoltage">输出限压 / 顺从电压</label><b id="limitValue">12.0 <small>V</small></b></div><input type="range" id="limitVoltage" min="2" max="15" step="0.5" value="12"><div class="range-poles"><span>2 V</span><span>15 V</span></div></div>
+            <div class="limits-head"><span>电压合格窗口 <em>绝对值 |V|</em></span><span id="limitHint">TVS 示意范围</span></div>
+            <div class="limit-fields"><label>最小 V <input id="specMin" type="number" step="0.05" min="0" value="5.8"/></label><label>最大 V <input id="specMax" type="number" step="0.05" min="0" value="7.3"/></label></div>
+            <div class="speed-row"><label for="simSpeed">仿真速度</label><select id="simSpeed"><option value="0.65">0.65×</option><option value="1" selected>1×</option><option value="1.6">1.6×</option><option value="2.5">2.5×</option></select></div>
+          </div>
+          <div class="actions"><button class="btn btn-primary" id="runAuto"><span>▶</span> 一键双向测试</button><div class="actions-secondary"><button class="btn btn-outline" id="runForward">+ 正向测试</button><button class="btn btn-outline" id="runReverse">− 反向测试</button><button class="btn btn-ghost" id="resetBtn" title="停止并清空">↻</button></div></div>
+        </div>
+        <div class="panel readout-panel">
+          <div class="panel-header"><div><div class="kicker">04 / MEASUREMENTS</div><h2>实时仪表数据</h2></div><span class="status-pill idle" id="statusPill">待机 READY</span></div>
+          <div class="meter-primary"><div class="meter-title">DUT 电压 <span id="polarityText">正向 / 未开始</span></div><div class="meter-number"><span id="voltageReading">+0.000</span><small>V</small></div><div class="meter-track"><div id="meterFill"></div></div></div>
+          <div class="meter-grid"><div><span>实际测试电流</span><strong id="actualCurrent">0.0000 <small>mA</small></strong></div><div><span>ADC 原始码</span><strong id="adcReading">0 <small>/ 1023</small></strong></div><div><span>模拟前端输入</span><strong id="afeReading">0.000 <small>V</small></strong></div><div><span>系统时钟</span><strong>22.1184 <small>MHz</small></strong></div></div>
+          <div class="process-head">测试流程 <span id="stepText">等待指令</span></div>
+          <div class="steps"><div data-step="switch"><i>1</i><span>继电器极性切换</span></div><div data-step="excite"><i>2</i><span>恒流源施加激励</span></div><div data-step="sample"><i>3</i><span>ADC 测量 + MCU 计算</span></div><div data-step="judge"><i>4</i><span>判定并保存结果</span></div></div>
+        </div>
+      </aside>
+    </main>
+    <section class="bottom-grid">
+      <div class="panel result-panel"><div class="panel-header"><div><div class="kicker">05 / TEST REPORT</div><h2>双向测试结果</h2></div><span class="report-note">目标：两方向各 1 次</span></div><div class="table-scroll"><table><thead><tr><th>方向</th><th>目标电流</th><th>实际电流</th><th>测得电压</th><th>判定</th></tr></thead><tbody><tr id="forwardRow"><td><span class="dir-pill">+ 正向</span></td><td class="goal-current">1.00 mA</td><td class="got-current">—</td><td class="got-voltage">—</td><td class="got-result"><span class="result-empty">未测试</span></td></tr><tr id="reverseRow"><td><span class="dir-pill reverse">− 反向</span></td><td class="goal-current">1.00 mA</td><td class="got-current">—</td><td class="got-voltage">—</td><td class="got-result"><span class="result-empty">未测试</span></td></tr></tbody></table></div><div class="report-summary" id="reportSummary">尚无测试结果。反向普通二极管可能达到电源限压，不能将限压误认为反向击穿电压。</div></div>
+      <div class="panel log-panel"><div class="panel-header"><div><div class="kicker">06 / MCU PROCESS</div><h2>单片机执行日志</h2></div><button class="text-btn" id="clearLog">清空日志</button></div><div id="eventLog" class="log-view" role="log" aria-live="polite"></div></div>
+    </section>
+    <footer class="footer"><div><b>测量模型：</b>理想化的恒流源 + 电压顺从限制 + 10位 ADC + 1/5 衰减测量前端。所有数据均为模拟生成，并非实测。</div><div><b>实板安全：</b>反向测试先核对器件型号和数据手册；加入限压、放电、极性切换死区和ADC过压保护。双向TVS在1mA下的电压不能直接等同数据手册指定电流下的击穿指标。</div></footer>
+  </div>
+  <script>
+/* DiodeLab 3D - offline, dependency-free native WebGL + JavaScript
+ * Educational current-source/ADC/MCU demonstration, NOT an instrument driver.
+ */
+'use strict';
+const $ = id => document.getElementById(id);
+const CFG = { target:1, compliance:12, min:5.8, max:7.3, device:'tvs', speed:1 };
+const PHASES = [
+  {key:'switch',time:.65,name:'继电器切换'},
+  {key:'excite',time:1.7,name:'恒流源激励'},
+  {key:'sample',time:1.3,name:'ADC连续采样'},
+  {key:'judge',time:.55,name:'判断结果'}
+];
+let running=false, queue=[], direction='forward', phaseIndex=-1, phaseTime=0, totalTime=0, lastFrame=0;
+let targetResult=null, measuredV=0, measuredI=0, adcCode=0, afeV=0, chartTime=0, trace=[], graphAccumulator=0, sampleAccumulator=0;
+let results={forward:null,reverse:null}, elapsedSinceStart=0;
+let logCounter=0;
+const showDir=d=>d==='forward'?'正向 +':'反向 −';
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const formatV=v=>(v<0?'':'+' )+v.toFixed(3);
+function log(message,type='info'){
+  const wrapper=document.createElement('div');wrapper.className='logline '+type;
+  const timestamp=document.createElement('span');timestamp.className='logtime';timestamp.textContent='['+String(++logCounter).padStart(2,'0')+']';
+  const label=document.createElement('span');label.className='logmsg';label.textContent=message;
+  wrapper.append(timestamp,label);$('eventLog').appendChild(wrapper);$('eventLog').scrollTop=$('eventLog').scrollHeight;
+  if($('eventLog').children.length>100)$('eventLog').removeChild($('eventLog').firstChild);
+}
+function readControls(){
+  CFG.target=parseFloat($('testCurrent').value)||1;
+  CFG.compliance=parseFloat($('limitVoltage').value)||12;
+  CFG.min=Math.max(0,Number($('specMin').value));
+  CFG.max=Math.max(0,Number($('specMax').value));
+  CFG.device=$('deviceType').value;
+  CFG.speed=Number($('simSpeed').value)||1;
+  $('currentValue').innerHTML=CFG.target.toFixed(2)+' <small>mA</small>';
+  $('limitValue').innerHTML=CFG.compliance.toFixed(1)+' <small>V</small>';
+  document.querySelectorAll('.goal-current').forEach(x=>x.textContent=CFG.target.toFixed(2)+' mA');
+}
+function setDefaultSpec(){
+  let isTvs=$('deviceType').value==='tvs';
+  $('specMin').value=isTvs?'5.8':'0.48';
+  $('specMax').value=isTvs?'7.3':'0.85';
+  $('limitHint').textContent=isTvs?'TVS 示意范围':'仅适用于正向压降';
+  readControls(); rebuildMesh();
+  if(!running)clearMeasurement(false);
+}
+// V/I model: at regulated current, idealized forward diode VF or idealized bidirectional TVS Vz.
+// 1mA reverse bias for an ordinary diode is usually NOT feasible below a safe 15V ceiling.
+function computeDevice(dir,cfg){
+  const i=cfg.target;
+  const sign=dir==='forward'?1:-1;
+  let required=0, actual=i, regulated=true, reason='';
+  if(cfg.device==='tvs'){
+    required=6.4+0.25*Math.log(i)+(dir==='reverse'?0.06:-0.03);
+  }else if(dir==='forward'){
+    required=0.625+0.059*Math.log(i);
+  }else{
+    required=70; // illustrative ordinary diode reverse avalanche voltage well beyond selected compliance
+    regulated=false;
+    actual=0.000008; // mA = 8 nA leakage estimate; not a universal silicon diode specification
+    reason='普通二极管在此反向限压下不导通，无法建立规定的1mA';
+  }
+  let voltage=required;
+  if(required>cfg.compliance){
+    regulated=false;
+    voltage=cfg.compliance;
+    if(cfg.device==='tvs')actual=Math.min(.004,Math.max(0.000001,i*Math.exp((cfg.compliance-required)/.22)));
+    else if(dir==='forward') actual=Math.min(i*.01,Math.max(0.000001,i*Math.exp((cfg.compliance-required)/.025)));
+    if(!reason)reason='恒流源触及电压上限，实际电流不足，测得的不是规定电流下的电压';
+  }
+  voltage=Math.max(.0001,voltage);
+  // ADC quantization: absolute voltage is attenuated 1/5 and polarity is recorded separately.
+  const voltageNoise=(Math.sin(i*10.7+(dir==='reverse'?11:0))+.4*Math.sin(i*31.5))*.002;
+  const adc=clamp(Math.round(clamp((voltage+voltageNoise)/5/3.3,0,1)*1023),0,1023);
+  const adcInput=adc/1023*3.3;
+  const reconstructed=adcInput*5*sign;
+  const passed=regulated && Math.abs(reconstructed)>=cfg.min && Math.abs(reconstructed)<=cfg.max;
+  return {direction:dir,voltage:reconstructed,idealVoltage:sign*voltage,current:actual,adc,adcInput,regulated,passed,
+    outcome:!regulated?'INVALID':passed?'PASS':'FAIL',reason:!regulated?reason:passed?'电流达标，电压处于设定窗口':'电流达标，但电压超出窗口',target:i};
+}
+function setRunningUI(on){
+  document.querySelectorAll('#deviceType,#testCurrent,#limitVoltage,#specMin,#specMax,#runForward,#runReverse,#runAuto').forEach(el=>el.disabled=on);
+  $('runAuto').innerHTML=on?'◉　测试进行中…':'<span>▶</span> 一键双向测试';
+}
+function resetStepUI(){document.querySelectorAll('.steps > div').forEach(x=>x.classList.remove('active','done'));}
+function clearMeasurement(clearLog=false){
+  running=false;queue=[];phaseIndex=-1;phaseTime=0;chartTime=0;graphAccumulator=0;sampleAccumulator=0;trace=[];
+  results={forward:null,reverse:null};measuredV=0;measuredI=0;adcCode=0;afeV=0;
+  targetResult=null;totalTime=0;direction='forward';setRunningUI(false);
+  $('sceneStage').textContent='READY / 待机';$('plotCaption').textContent='等待开始采样';$('polarityText').textContent='正向 / 未开始';$('stepText').textContent='等待指令';
+  const pill=$('statusPill');pill.className='status-pill idle';pill.textContent='待机 READY';
+  resetStepUI();showReadings();drawGraph();renderRows();
+  if(clearLog)$('eventLog').innerHTML='';
+}
+function setPill(text,kind){const p=$('statusPill');p.textContent=text;p.className='status-pill '+kind;}
+function beginRun(modes){
+  readControls();
+  if(CFG.min>CFG.max){log('参数错误：最小值不得高于最大值','err');return;}
+  clearMeasurement();
+  running=true;queue=modes.slice();
+  setRunningUI(true);log('MCU 初始化：ADC 10bit / Vref 3.3V / 衰减比1:5','info');
+  log(`设置：恒流 ${CFG.target.toFixed(2)}mA，限压 ±${CFG.compliance.toFixed(1)}V，PASS窗口 ${CFG.min}～${CFG.max}V`);
+  nextDirection();
+}
+function nextDirection(){
+  if(!queue.length){finishRun();return;}
+  direction=queue.shift();targetResult=computeDevice(direction,CFG);
+  measuredV=0;measuredI=0;adcCode=0;afeV=0;
+  phaseIndex=0;phaseTime=0;sampleAccumulator=0;
+  $('polarityText').textContent=showDir(direction);
+  log(`${showDir(direction)}：断开激励，继电器 K1/K2 选择极性`);
+  applyPhase();
+}
+function applyPhase(){
+  const p=PHASES[phaseIndex];
+  resetStepUI();
+  document.querySelectorAll('.steps > div').forEach((item,i)=>item.classList.add(i<phaseIndex?'done':i===phaseIndex?'active':'not'));
+  $('sceneStage').textContent=`${direction==='forward'?'FORWARD +':'REVERSE −'} / ${p.name}`;
+  $('stepText').textContent=p.name;
+  $('plotCaption').textContent=`${showDir(direction)} · ${p.name}`;
+  setPill('执行中 RUNNING','running');
+  if(p.key==='excite')log(`打开恒流源：目标${CFG.target.toFixed(2)}mA，顺从电压上限${CFG.compliance.toFixed(1)}V`);
+  if(p.key==='sample'){
+    log(`电压检测前端：|V_DUT|÷5 → 3.3V/10bit ADC，${targetResult.regulated?'恒流已建立':'电源已达顺从电压上限'}`,targetResult.regulated?'info':'warn');
+  }
+  if(p.key==='judge'){
+    log(`ADC=${targetResult.adc}；重建电压=${formatV(targetResult.voltage)}V；实际电流=${targetResult.current.toFixed(6)}mA`);
+  }
+}
+function updateRun(dt){
+  if(!running)return;
+  dt=Math.min(dt,.08)*CFG.speed;totalTime+=dt;phaseTime+=dt;chartTime+=dt;
+  const p=PHASES[phaseIndex];
+  let vScale=0;
+  if(phaseIndex===0)vScale=0;
+  if(phaseIndex===1)vScale=1-Math.exp(-5.2*clamp(phaseTime/p.time,0,1));
+  if(phaseIndex>=2)vScale=1;
+  measuredV=targetResult.voltage*vScale;
+  measuredI=targetResult.current*vScale;
+  afeV=Math.abs(measuredV)/5;
+  adcCode=clamp(Math.round(afeV/3.3*1023),0,1023);
+  graphAccumulator+=dt;
+  if(graphAccumulator>=.045){
+    graphAccumulator=0;trace.push({time:chartTime,v:measuredV,direction});
+    if(trace.length>600)trace.shift();
+    drawGraph();
+  }
+  if(p.key==='sample'){
+    sampleAccumulator+=dt;
+    if(sampleAccumulator>=.24){sampleAccumulator=0;log(`ADC采样：${adcCode}/1023，AFE=${afeV.toFixed(3)}V，DUT=${formatV(measuredV)}V`);}
+  }
+  showReadings();
+  if(phaseTime>=p.time){
+    phaseIndex++;phaseTime=0;
+    if(phaseIndex>=PHASES.length){
+      const r=targetResult;results[direction]=r;
+      log(`${showDir(direction)}测试结束：${r.outcome}；${r.reason}`,r.outcome==='PASS'?'ok':r.outcome==='FAIL'?'err':'warn');
+      renderRows();
+      if(queue.length){trace.push({time:chartTime,v:NaN,direction});nextDirection();}
+      else finishRun();
+    }else applyPhase();
+  }
+}
+function finishRun(){
+  running=false;phaseIndex=-1;setRunningUI(false);resetStepUI();
+  const done=Object.values(results).filter(Boolean),invalid=done.some(x=>x.outcome==='INVALID'),fail=done.some(x=>x.outcome==='FAIL'),pass=done.every(x=>x.outcome==='PASS');
+  const kind=invalid?'invalid':fail?'fail':pass?'pass':'idle';
+  setPill(invalid?'部分数据无效':fail?'判定 FAIL':pass?'判定 PASS':'待机 READY',kind);
+  $('sceneStage').textContent=invalid?'COMPLIANCE LIMIT':fail?'MEASUREMENT FAIL':'TEST COMPLETE';
+  $('stepText').textContent='测试完成';$('plotCaption').textContent='采集完成 · 可修改参数重新测试';
+  log('测试结束，继电器断开激励，建议对DUT放电','ok');
+  renderRows();
+}
+function renderRows(){
+  for(let dir of ['forward','reverse']){
+    let row=$(dir+'Row'),r=results[dir];
+    row.querySelector('.goal-current').textContent=CFG.target.toFixed(2)+' mA';
+    row.querySelector('.got-current').textContent=r?(r.current<.001?(r.current*1000).toFixed(3)+' μA':r.current.toFixed(4)+' mA'):'—';
+    row.querySelector('.got-voltage').textContent=r?formatV(r.voltage)+' V':'—';
+    row.querySelector('.got-result').innerHTML=r?`<span class="result-${r.outcome.toLowerCase()}">${r.outcome==='INVALID'?'无效 / 未达电流':r.outcome}</span>`:'<span class="result-empty">未测试</span>';
+  }
+  const done=Object.values(results).filter(Boolean);
+  let summary='尚无测试结果。反向普通二极管可能达到电源限压，不能将限压误认为反向击穿电压。';
+  if(done.length){
+    summary=done.map(r=>`${showDir(r.direction)}：${r.outcome==='INVALID'?'无效':r.outcome}（${r.reason}）`).join('　｜　');
+    if(CFG.device==='tvs')summary+='。提示：TVS示意模型参数仅作教学，不能替代具体型号的Vrwm/Vbr/Ipp规格。';
+  }
+  $('reportSummary').textContent=summary;
+}
+function showReadings(){
+  $('voltageReading').textContent=formatV(measuredV);
+  $('actualCurrent').innerHTML=(measuredI<.001?measuredI.toFixed(6):measuredI.toFixed(4))+' <small>mA</small>';
+  $('adcReading').innerHTML=adcCode+' <small>/ 1023</small>';
+  $('afeReading').innerHTML=afeV.toFixed(3)+' <small>V</small>';
+  $('meterFill').style.width=clamp(Math.abs(measuredV)/Math.max(CFG.compliance,1)*100,0,100)+'%';
+}
+function drawGraph(){
+  const canvas=$('waveChart'),r=canvas.getBoundingClientRect();
+  if(r.width<1||r.height<1)return;
+  const dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  const w=r.width,h=r.height,pl=46,pr=17,pt=17,pb=30,plotW=w-pl-pr,plotH=h-pt-pb;
+  ctx.clearRect(0,0,w,h);
+  const data=trace.filter(q=>Number.isFinite(q.v));
+  let extreme=Math.max(1,CFG.max+1,Math.abs(measuredV)+.6);
+  if(data.length)extreme=Math.max(extreme,...data.map(q=>Math.abs(q.v)));
+  const hasNeg=trace.some(q=>q.direction==='reverse'&&Number.isFinite(q.v));
+  let ymin=hasNeg?-Math.ceil(extreme*1.15):-.35;
+  let ymax=Math.ceil(extreme*1.15);
+  const T=Math.max(4,chartTime+.45);
+  const mapX=t=>pl+plotW*t/T;
+  const mapY=v=>pt+plotH*(ymax-v)/(ymax-ymin);
+  ctx.font='10px ui-monospace,monospace';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    let v=ymin+(ymax-ymin)*i/4,yy=mapY(v);
+    ctx.strokeStyle='rgba(118,153,194,.13)';ctx.beginPath();ctx.moveTo(pl,yy);ctx.lineTo(w-pr,yy);ctx.stroke();
+    ctx.fillStyle='#758fa8';ctx.textAlign='right';ctx.fillText(v.toFixed(1),pl-9,yy+3);
+  }
+  for(let i=0;i<=5;i++){
+    let t=T*i/5,x=mapX(t);ctx.strokeStyle='rgba(118,153,194,.09)';ctx.beginPath();ctx.moveTo(x,pt);ctx.lineTo(x,h-pb);ctx.stroke();
+    ctx.fillStyle='#71869f';ctx.textAlign='center';ctx.fillText(t.toFixed(1),x,h-11);
+  }
+  ctx.strokeStyle='#58839a';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(pl,mapY(0));ctx.lineTo(w-pr,mapY(0));ctx.stroke();ctx.setLineDash([]);
+  for(let dir of ['forward','reverse']){
+    let color=dir==='forward'?'#4ce1f5':'#f5b673';
+    const vals=trace.filter(q=>q.direction===dir&&Number.isFinite(q.v));
+    if(vals.length<2)continue;
+    ctx.beginPath();ctx.moveTo(mapX(vals[0].time),mapY(vals[0].v));
+    for(let i=1;i<vals.length;i++)ctx.lineTo(mapX(vals[i].time),mapY(vals[i].v));
+    ctx.strokeStyle=color;ctx.lineWidth=2.6;ctx.shadowColor=color;ctx.shadowBlur=7;ctx.stroke();ctx.shadowBlur=0;
+    const last=vals[vals.length-1];ctx.fillStyle=color;ctx.beginPath();ctx.arc(mapX(last.time),mapY(last.v),3.5,0,Math.PI*2);ctx.fill();
+  }
+  if(!data.length){ctx.fillStyle='#60778f';ctx.textAlign='center';ctx.font='12px system-ui';ctx.fillText('启动测试后，这里实时绘制采样电压曲线',w/2,h/2);}
+}
+
+// ── Minimal native WebGL engine: real 3D geometry, perspective, orbit camera, per-face lighting.
+const glCanvas=$('glScene'),overCanvas=$('labelScene'),holder=$('sceneFrame');
+let gl=null,fallbackCtx=null,program=null,bufPos=null,bufNormal=null,bufCol=null,vertexCount=0;
+const geom={p:[],n:[],c:[]};
+let yaw=-.52,pitch=.82,radius=11.8,dragging=false,dragX=0,dragY=0;
+function clr(hex){hex=hex.replace('#','');return [parseInt(hex.slice(0,2),16)/255,parseInt(hex.slice(2,4),16)/255,parseInt(hex.slice(4,6),16)/255];}
+function addTri(a,b,c,color){
+  const u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],v=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];
+  const cross=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]],m=Math.hypot(...cross)||1;
+  for(const pt of [a,b,c]){geom.p.push(...pt);geom.n.push(...cross.map(z=>z/m));geom.c.push(...color);}
+}
+function quad(a,b,c,d,col){addTri(a,b,c,col);addTri(a,c,d,col);}
+function box(x,y,z,w,h,d,color){
+  const col=clr(color),x0=x-w/2,x1=x+w/2,y0=y-h/2,y1=y+h/2,z0=z-d/2,z1=z+d/2;
+  let A=[x0,y0,z0],B=[x1,y0,z0],C=[x1,y0,z1],D=[x0,y0,z1],E=[x0,y1,z0],F=[x1,y1,z0],G=[x1,y1,z1],H=[x0,y1,z1];
+  quad(E,H,G,F,col);quad(D,A,B,C,col);quad(A,E,F,B,col);quad(B,F,G,C,col);quad(C,G,H,D,col);quad(D,H,E,A,col);
+}
+function cylinderX(x,y,z,len,r,color,segments=16){const col=clr(color);for(let i=0;i<segments;i++){
+ let t=i*Math.PI*2/segments,n=(i+1)*Math.PI*2/segments;
+ let a=[x-len/2,y+Math.sin(t)*r,z+Math.cos(t)*r],b=[x+len/2,y+Math.sin(t)*r,z+Math.cos(t)*r],c=[x+len/2,y+Math.sin(n)*r,z+Math.cos(n)*r],d=[x-len/2,y+Math.sin(n)*r,z+Math.cos(n)*r];
+ quad(a,b,c,d,col);addTri([x-len/2,y,z],d,a,col);addTri([x+len/2,y,z],b,c,col);
+}}
+function cylY(x,y,z,height,r,color,segments=18){const col=clr(color);for(let i=0;i<segments;i++){
+ let t=i*2*Math.PI/segments,n=(i+1)*2*Math.PI/segments;
+ let a=[x+r*Math.cos(t),y-height/2,z+r*Math.sin(t)],b=[x+r*Math.cos(t),y+height/2,z+r*Math.sin(t)],c=[x+r*Math.cos(n),y+height/2,z+r*Math.sin(n)],d=[x+r*Math.cos(n),y-height/2,z+r*Math.sin(n)];
+ quad(a,b,c,d,col);addTri([x,y+height/2,z],b,c,col);
+}}
+function beam(a,b,width,height,color){
+ const dx=b[0]-a[0],dz=b[2]-a[2],len=Math.hypot(dx,dz),nx=-dz/len*width/2,nz=dx/len*width/2,y=(a[1]+b[1])/2;
+ if(len<.001)return;
+ const x0=a[0],x1=b[0],z0=a[2],z1=b[2],c=clr(color),h=height/2;
+ const t0=[x0+nx,y+h,z0+nz],t1=[x1+nx,y+h,z1+nz],t2=[x1-nx,y+h,z1-nz],t3=[x0-nx,y+h,z0-nz];
+ quad(t0,t1,t2,t3,c);quad([x0-nx,y-h,z0-nz],[x1-nx,y-h,z1-nz],[x1-nx,y+h,z1-nz],[x0-nx,y+h,z0-nz],c);
+}
+const positiveRoute=[[-3,.22,-.35],[-2.45,.22,-.35],[-2.45,.22,-.8],[-1.05,.22,-.8],[-.55,.22,-.32],[.36,.22,-.32]];
+const returnRoute=[[1.56,.22,-.32],[2.1,.22,-1.6],[-3.05,.22,-1.6],[-3.05,.22,-.88]];
+const senseRoute=[[1.45,.22,.26],[1.8,.22,1.3],[2.7,.22,1.3],[3.4,.22,.62]];
+const labels=[
+  {p:[-3.8,1.30,-.25],title:'CCS',sub:'恒流源 1mA'},
+  {p:[-1.65,1.20,-1.24],title:'K1 / K2',sub:'极性切换继电器'},
+  {p:[.96,1.10,-.43],title:'DUT',sub:'双向TVS / 二极管'},
+  {p:[2.5,1.06,1.42],title:'AFE',sub:'÷5 / ADC保护'},
+  {p:[3.9,1.15,-.78],title:'MCU',sub:'STC12C5A60S2'}
+];
+function rebuildMesh(){
+  geom.p.length=0;geom.n.length=0;geom.c.length=0;
+  // PCB base and raised frame
+  box(0,-.15,0,10.45,.28,6.1,'#11475a');box(0,-.009,0,10.18,.03,5.82,'#174c58');
+  box(0,-.29,-2.99,10.4,.08,.08,'#0a9a99');box(0,-.29,2.99,10.4,.08,.08,'#0a9a99');
+  // connector pads and plated screw sockets
+  for(let x of [-4.85,4.85])for(let z of [-2.6,2.6]){cylY(x,.045,z,.035,.24,'#638a8d',24);cylY(x,.07,z,.04,.115,'#132534',20);}
+  // copper points/tracks
+  for(const route of [positiveRoute,returnRoute])for(let i=0;i<route.length-1;i++)beam(route[i],route[i+1],.065,.022,'#cc9754');
+  for(let i=0;i<senseRoute.length-1;i++)beam(senseRoute[i],senseRoute[i+1],.045,.014,'#64e4be');
+  for(let x=-4.6;x<=4.6;x+=.8)for(let z of [-2.65,2.65])box(x,.025,z,.24,.015,.14,'#285a67');
+  // current source block with black control panel
+  box(-3.8,.48,-.3,1.95,.87,1.7,'#bacad4');box(-3.8,.941,-.3,1.72,.07,1.49,'#182d3c');box(-3.86,.983,-.28,1.04,.02,.46,'#1a6472');
+  for(let z of [-.89,-.42,.1,.57])box(-4.61,.94,z,.1,.08,.1,'#e6af6c');
+  // Relay group
+  box(-1.73,.38,-1.24,1.02,.68,.77,'#26527a');box(-1.73,.735,-1.24,.88,.025,.64,'#307ca6');
+  box(-1.73,.38,.56,1.02,.68,.77,'#26527a');box(-1.73,.735,.56,.88,.025,.64,'#307ca6');
+  for(let z of [-1.58,-.91,.22,.9])for(let x of [-2.12,-1.3])box(x,.09,z,.16,.13,.095,'#afc4d0');
+  // diode footprint and DUT; 3D actual package changes on selection
+  box(.98,.06,-.32,2.2,.1,.95,'#163746');
+  for(let x of [.1,1.86])box(x,.135,-.32,.38,.075,.70,'#c79b5b');
+  if(CFG.device==='tvs'){
+    box(.98,.36,-.32,1.30,.42,.70,'#151b25');box(.98,.59,-.32,1.13,.05,.55,'#232d3b');
+    box(.24,.29,-.32,.25,.27,.69,'#bcc0c4');box(1.72,.29,-.32,.25,.27,.69,'#bcc0c4');
+    box(.42,.609,-.32,.085,.012,.47,'#e1e8eb');
+  }else{
+    cylinderX(.98,.37,-.32,1.25,.25,'#121822',24);
+    cylinderX(1.44,.37,-.32,.095,.254,'#e3e4d7',24);
+    cylinderX(.04,.37,-.32,.7,.07,'#b1c1d0');cylinderX(1.93,.37,-.32,.64,.07,'#b1c1d0');
+  }
+  // AFE chip and support resistors
+  box(2.66,.30,1.37,1.36,.52,.98,'#263d46');box(2.66,.585,1.37,1.15,.06,.79,'#2b6d6c');
+  for(let i=0;i<5;i++){box(2.05+i*.26,.06,2.09,.15,.12,.3,'#af8c5a');box(2.05+i*.26,.06,.7,.16,.12,.28,'#aec6c3');}
+  // MCU QFP
+  box(3.75,.31,-.8,1.42,.42,1.46,'#181d28');box(3.75,.533,-.8,1.16,.035,1.17,'#222b38');
+  for(let i=0;i<8;i++){
+    const o=-.62+i*.18;
+    box(3.75+o,.12,-1.55,.11,.06,.22,'#b5b9c6');box(3.75+o,.12,-.05,.11,.06,.22,'#b5b9c6');
+    box(3.0,.12,-.8+o,.22,.06,.11,'#b5b9c6');box(4.5,.12,-.8+o,.22,.06,.11,'#b5b9c6');
+  }
+  // debug UART connectors and test terminal structures
+  for(let x of [-3.7,3.7])for(let j=0;j<4;j++)box(x+j*.23-0.35,.17,2.45,.16,.27,.24,'#b8a36b');
+  box(-.75,.17,2.2,1.5,.28,.62,'#344752');box(-.75,.32,2.2,1.28,.035,.44,'#111e2f');
+  for(let x=-4.4;x<=4.4;x+=1.55)for(let z of [-2.15,2.15])box(x,.02,z,.32,.015,.04,'#678b8b');
+  vertexCount=geom.p.length/3;
+  if(gl){
+    gl.bindBuffer(gl.ARRAY_BUFFER,bufPos);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(geom.p),gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER,bufNormal);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(geom.n),gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER,bufCol);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(geom.c),gl.STATIC_DRAW);
+  }
+}
+function matMul(a,b){const out=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++){let v=0;for(let k=0;k<4;k++)v+=a[k*4+r]*b[c*4+k];out[c*4+r]=v;}return out;}
+function perspective(fov,aspect,n,f){const t=1/Math.tan(fov/2),o=new Float32Array(16);o[0]=t/aspect;o[5]=t;o[10]=(f+n)/(n-f);o[11]=-1;o[14]=2*f*n/(n-f);return o;}
+function lookAt(eye,target){const norm=v=>{let n=Math.hypot(...v)||1;return v.map(x=>x/n);};let z=norm(eye.map((x,i)=>x-target[i]));let x=norm([z[2],0,-z[0]]);let y=[z[1]*x[2]-z[2]*x[1],z[2]*x[0]-z[0]*x[2],z[0]*x[1]-z[1]*x[0]];let out=new Float32Array(16);out.set([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-x.reduce((s,k,i)=>s+k*eye[i],0),-y.reduce((s,k,i)=>s+k*eye[i],0),-z.reduce((s,k,i)=>s+k*eye[i],0),1]);return out;}
+function makeShader(type,source){const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
+function init3D(){
+  try{
+    gl=glCanvas.getContext('webgl',{antialias:true,alpha:false,preserveDrawingBuffer:false});
+    if(!gl)throw Error('WebGL不可用');
+    const v=makeShader(gl.VERTEX_SHADER,`attribute vec3 p; attribute vec3 n; attribute vec3 c; uniform mat4 m; varying vec3 col; void main(){vec3 light=normalize(vec3(-0.7,1.1,0.8));float diffuse=max(dot(n,light),0.0); col=c*(0.43+0.62*diffuse);gl_Position=m*vec4(p,1.0);}`);
+    const f=makeShader(gl.FRAGMENT_SHADER,`precision mediump float; varying vec3 col; void main(){gl_FragColor=vec4(col,1.0);}`);
+    program=gl.createProgram();gl.attachShader(program,v);gl.attachShader(program,f);gl.linkProgram(program);
+    if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));
+    bufPos=gl.createBuffer();bufNormal=gl.createBuffer();bufCol=gl.createBuffer();
+    gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);rebuildMesh();
+  }catch(e){console.warn('WebGL unavailable; falling back to software 3D projection:',e.message);gl=null;fallbackCtx=glCanvas.getContext('2d');$('glFallback').hidden=true;rebuildMesh();document.querySelector('.scene-corner').textContent='CANVAS 3D COMPATIBILITY RENDERER';}
+}
+function scaleCanvas(canvas){const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=Math.round(rect.width*dpr),h=Math.round(rect.height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}return {w,h,dpr};}
+let currentVP=null;
+function project(pt,w,h){if(!currentVP)return null;const m=currentVP,x=pt[0],y=pt[1],z=pt[2],a=m[0]*x+m[4]*y+m[8]*z+m[12],b=m[1]*x+m[5]*y+m[9]*z+m[13],d=m[3]*x+m[7]*y+m[11]*z+m[15];if(d<=.01)return null;return {x:(a/d*.5+.5)*w,y:(.5-b/d*.5)*h,depth:d};}
+function pill(ctx,x,y,t,sub){
+  ctx.font='700 12px ui-monospace,Consolas,monospace';const width=Math.max(ctx.measureText(t).width,ctx.measureText(sub).width)+22,height=37;
+  x=clamp(x-width/2,width/2+6,ctx.canvas.clientWidth-width/2-6);y=clamp(y,9,ctx.canvas.clientHeight-height-5);
+  ctx.fillStyle='rgba(9,22,36,.87)';ctx.strokeStyle='rgba(85,161,195,.45)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.roundRect(x-width/2,y,width,height,6);ctx.fill();ctx.stroke();
+  ctx.textAlign='center';ctx.fillStyle='#c9edff';ctx.font='700 11px ui-monospace,monospace';ctx.fillText(t,x,y+14);
+  ctx.font='10px "Microsoft YaHei",system-ui';ctx.fillStyle='#8bb6c8';ctx.fillText(sub,x,y+29);
+}
+function interpRoute(route,t){let lens=[],total=0;for(let i=0;i<route.length-1;i++){let a=route[i],b=route[i+1],len=Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);lens.push(len);total+=len;}let at=(t%1+1)%1*total;for(let i=0;i<lens.length;i++){if(at<=lens[i]||i===lens.length-1){let f=at/lens[i],a=route[i],b=route[i+1];return a.map((x,j)=>x+(b[j]-x)*f);}at-=lens[i];}return route[0];}
+let lastCpuDraw=-100;
+function drawCanvas3DFallback(info,time){
+  if(!fallbackCtx||time-lastCpuDraw<34)return;
+  lastCpuDraw=time;
+  const ctx=fallbackCtx,w=info.w/info.dpr,h=info.h/info.dpr;
+  ctx.setTransform(info.dpr,0,0,info.dpr,0,0);ctx.clearRect(0,0,w,h);
+  const grad=ctx.createRadialGradient(w*.47,h*.48,8,w*.5,h*.5,w*.63);
+  grad.addColorStop(0,'#1a3043');grad.addColorStop(1,'#0a1421');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
+  let faces=[];
+  const light=[-.38,.72,.52];
+  for(let i=0;i<geom.p.length;i+=9){
+    const a=project(geom.p.slice(i,i+3),w,h),b=project(geom.p.slice(i+3,i+6),w,h),c=project(geom.p.slice(i+6,i+9),w,h);
+    if(!a||!b||!c)continue;
+    if(Math.max(a.x,b.x,c.x)<-20||Math.min(a.x,b.x,c.x)>w+20||Math.max(a.y,b.y,c.y)<-20||Math.min(a.y,b.y,c.y)>h+20)continue;
+    const nx=geom.n[i],ny=geom.n[i+1],nz=geom.n[i+2],shade=.42+.63*Math.max(0,nx*light[0]+ny*light[1]+nz*light[2]);
+    const r=Math.round(geom.c[i]*255*shade),g=Math.round(geom.c[i+1]*255*shade),bb=Math.round(geom.c[i+2]*255*shade);
+    faces.push({a,b,c,depth:(a.depth+b.depth+c.depth)/3,color:`rgb(${r},${g},${bb})`});
+  }
+  faces.sort((a,b)=>b.depth-a.depth);
+  for(const f of faces){
+    ctx.fillStyle=f.color;ctx.beginPath();ctx.moveTo(f.a.x,f.a.y);ctx.lineTo(f.b.x,f.b.y);ctx.lineTo(f.c.x,f.c.y);ctx.closePath();ctx.fill();
+  }
+}
+function render3D(t){
+  const a=scaleCanvas(glCanvas),b=scaleCanvas(overCanvas);
+  const angle=running?yaw:yaw+.018*Math.sin(t*.00024);
+  const eye=[radius*Math.cos(pitch)*Math.sin(angle),radius*Math.sin(pitch),radius*Math.cos(pitch)*Math.cos(angle)];
+  currentVP=matMul(perspective(Math.PI/4,a.w/Math.max(1,a.h),.05,120),lookAt(eye,[0,.12,0]));
+  if(gl){gl.viewport(0,0,a.w,a.h);gl.clearColor(.044,.078,.125,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(program);gl.uniformMatrix4fv(gl.getUniformLocation(program,'m'),false,currentVP);
+    for(let [key,buf] of [['p',bufPos],['n',bufNormal],['c',bufCol]]){const loc=gl.getAttribLocation(program,key);gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,3,gl.FLOAT,false,0,0);}
+    gl.drawArrays(gl.TRIANGLES,0,vertexCount);
+  }else drawCanvas3DFallback(a,t);
+  const ctx=overCanvas.getContext('2d');const rw=b.w/b.dpr,rh=b.h/b.dpr;ctx.setTransform(b.dpr,0,0,b.dpr,0,0);ctx.clearRect(0,0,rw,rh);
+  // PCB edge perspective guide, 3D terminal/name labels
+  labels.forEach((L,i)=>{
+    const pt=project(L.p,rw,rh);if(!pt)return;
+    const title=i===2?(CFG.device==='tvs'?'DUT / TVS':'DUT / DIODE'):L.title;
+    pill(ctx,pt.x,pt.y-42,title,L.sub);
+    ctx.strokeStyle='rgba(92,193,222,.3)';ctx.beginPath();ctx.moveTo(pt.x,pt.y-6);ctx.lineTo(pt.x,pt.y+10);ctx.stroke();
+  });
+  if(running&&phaseIndex>=1){
+    const val=Math.abs(measuredI)/Math.max(CFG.target,.001);
+    const density=targetResult?.regulated?17:8;
+    const speed=(direction==='forward'?1:-1)*(0.12+0.17*clamp(val,0,1));
+    const flow=(t/1000*speed)%1;
+    let rr=positiveRoute.concat(returnRoute);
+    for(let i=0;i<density;i++){
+      let pt=project(interpRoute(rr,flow+i/density),rw,rh);if(!pt)continue;
+      const alpha=.34+.66*clamp(val,0,1);
+      ctx.beginPath();ctx.fillStyle=`rgba(71,223,245,${alpha})`;ctx.shadowColor='#5be5ff';ctx.shadowBlur=12;ctx.arc(pt.x,pt.y,clamp(4.0*13/pt.depth,1.8,5),0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+    }
+    // measurement/sense signal flows to ADC, then MCU (warm amber)
+    for(let i=0;i<7;i++){
+      let p=project(interpRoute(senseRoute,((t/1000)*.18+i/7)%1),rw,rh);if(!p)continue;
+      ctx.beginPath();ctx.fillStyle='rgba(244,187,104,.85)';ctx.shadowColor='#ecac61';ctx.shadowBlur=8;ctx.arc(p.x,p.y,2.3,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+    }
+  }
+}
+function initOrbit(){
+  holder.addEventListener('pointerdown',e=>{if(e.target.tagName==='CANVAS'){dragging=true;dragX=e.clientX;dragY=e.clientY;holder.setPointerCapture(e.pointerId);}});
+  holder.addEventListener('pointermove',e=>{if(!dragging)return;let dx=e.clientX-dragX,dy=e.clientY-dragY;dragX=e.clientX;dragY=e.clientY;yaw+=dx*.0065;pitch=clamp(pitch+dy*.0045,.19,1.46);});
+  holder.addEventListener('pointerup',()=>dragging=false);holder.addEventListener('pointercancel',()=>dragging=false);
+  holder.addEventListener('wheel',e=>{e.preventDefault();radius=clamp(radius+e.deltaY*.011,8.5,24);},{passive:false});
+  holder.addEventListener('dblclick',()=>{yaw=-.52;pitch=.82;radius=11.8;});
+}
+function frame(time){
+  const dt=lastFrame?Math.min((time-lastFrame)/1000,.1):0;lastFrame=time;
+  updateRun(dt);render3D(time);
+  requestAnimationFrame(frame);
+}
+function start(){
+  $('deviceType').addEventListener('change',setDefaultSpec);
+  for(let el of ['testCurrent','limitVoltage','specMin','specMax','simSpeed']){
+    $(el).addEventListener('input',()=>{readControls();renderRows();drawGraph();});
+  }
+  $('runAuto').addEventListener('click',()=>beginRun(['forward','reverse']));
+  $('runForward').addEventListener('click',()=>beginRun(['forward']));
+  $('runReverse').addEventListener('click',()=>beginRun(['reverse']));
+  $('resetBtn').addEventListener('click',()=>{clearMeasurement();log('系统复位：清空测量状态及曲线');});
+  $('clearLog').addEventListener('click',()=>{$('eventLog').innerHTML='';logCounter=0;});
+  readControls();init3D();initOrbit();clearMeasurement();
+  log('DiodeLab 已加载：3D测试台 / 继电器 / MCU ADC 仿真已就绪','ok');
+  log('建议先选双向TVS，点击“一键双向测试”观察曲线和电流流向');
+  log('注意：模拟数据不等于真实测量；测试规范必须以器件数据手册为准','warn');
+  requestAnimationFrame(frame);
+  window.addEventListener('resize',drawGraph);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+
+</script>
+</body>
+</html>

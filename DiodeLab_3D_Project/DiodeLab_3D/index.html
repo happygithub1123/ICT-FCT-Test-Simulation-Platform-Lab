@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090e18" />
+  <title>DiodeLab 3D | FCT 二极管 / 双向 TVS 恒流测试仿真</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brandmark"><span class="brandicon">◈</span><span>Diode<span class="highlight">Lab</span><small>FCT / ELECTRONICS SIMULATOR</small></span></div>
+      <div class="topmeta"><span class="top-chip"><span class="live-dot"></span> 3D · 实时仿真</span><span class="top-chip muted">HTML + JavaScript · 纯离线</span></div>
+    </header>
+    <section class="intro">
+      <div><div class="eyebrow">TEST BENCH / DI-03</div><h1>二极管 <span>双向恒流测试</span></h1><p>1mA 恒流激励 · 继电器极性切换 · ADC 电压采样 · 正反向特性 · 自动合格判定</p></div>
+      <div class="mode-note">工程教学仿真 <span>不是实物采集</span></div>
+    </section>
+    <main class="workspace">
+      <section class="left-side">
+        <div class="panel scene-panel">
+          <div class="panel-header"><div><div class="kicker">01 / HARDWARE OVERVIEW</div><h2>3D 测试硬件平台</h2></div><div class="legend"><span><i class="legend-dot current"></i> 恒流路径</span><span><i class="legend-dot sense"></i> 采样路径</span></div></div>
+          <div class="scene-frame" id="sceneFrame">
+            <canvas id="glScene" aria-label="可旋转的3D测试板模型"></canvas>
+            <canvas id="labelScene" aria-hidden="true"></canvas>
+            <div class="scene-badge" id="sceneStage">READY / 待机</div>
+            <div class="axis-label">拖拽旋转 · 滚轮缩放 · 双击复位视角</div>
+            <div class="scene-corner"><span class="line"></span> MCU / CCS / RELAY / DUT / ADC</div>
+            <div class="fallback" id="glFallback" hidden>当前浏览器未启用 WebGL 3D。请使用 Chrome / Edge，并开启硬件加速。</div>
+          </div>
+          <div class="scene-bottom"><div class="flow-item"><span class="flow-index">01</span>恒流源</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">02</span>极性继电器</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">03</span>被测器件</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">04</span>AFE + ADC</div><span class="flow-arrow">→</span><div class="flow-item"><span class="flow-index">05</span>MCU 判定</div></div>
+        </div>
+        <div class="panel chart-panel">
+          <div class="panel-header"><div><div class="kicker">02 / ACQUISITION</div><h2>ADC 电压采集曲线</h2></div><div class="chart-meta"><span class="chart-pip"></span> <span id="plotCaption">等待开始采样</span></div></div>
+          <div class="graph-wrap"><canvas id="waveChart" aria-label="实时二极管电压时间曲线"></canvas></div>
+          <div class="chart-foot"><span><i class="legend-dot current"></i> DUT 电压 V(t)</span><span class="tiny">横轴：时间 s · 纵轴：电压 V</span></div>
+        </div>
+      </section>
+      <aside class="right-side">
+        <div class="panel setting-panel">
+          <div class="panel-header"><div><div class="kicker">03 / PARAMETERS</div><h2>测试参数设置</h2></div><span class="config-tag">CONFIG</span></div>
+          <div class="fields">
+            <label class="field"><span>器件类型 <em>DUT</em></span><select id="deviceType"><option value="tvs">双向 TVS（教学示意模型）</option><option value="diode">普通硅二极管（示意模型）</option></select></label>
+            <div class="range-field"><div class="range-head"><label for="testCurrent">恒流源设定</label><b id="currentValue">1.00 <small>mA</small></b></div><input type="range" id="testCurrent" min="0.2" max="5" step="0.1" value="1"><div class="range-poles"><span>0.2 mA</span><span>5 mA</span></div></div>
+            <div class="range-field"><div class="range-head"><label for="limitVoltage">输出限压 / 顺从电压</label><b id="limitValue">12.0 <small>V</small></b></div><input type="range" id="limitVoltage" min="2" max="15" step="0.5" value="12"><div class="range-poles"><span>2 V</span><span>15 V</span></div></div>
+            <div class="limits-head"><span>电压合格窗口 <em>绝对值 |V|</em></span><span id="limitHint">TVS 示意范围</span></div>
+            <div class="limit-fields"><label>最小 V <input id="specMin" type="number" step="0.05" min="0" value="5.8"/></label><label>最大 V <input id="specMax" type="number" step="0.05" min="0" value="7.3"/></label></div>
+            <div class="speed-row"><label for="simSpeed">仿真速度</label><select id="simSpeed"><option value="0.65">0.65×</option><option value="1" selected>1×</option><option value="1.6">1.6×</option><option value="2.5">2.5×</option></select></div>
+          </div>
+          <div class="actions"><button class="btn btn-primary" id="runAuto"><span>▶</span> 一键双向测试</button><div class="actions-secondary"><button class="btn btn-outline" id="runForward">+ 正向测试</button><button class="btn btn-outline" id="runReverse">− 反向测试</button><button class="btn btn-ghost" id="resetBtn" title="停止并清空">↻</button></div></div>
+        </div>
+        <div class="panel readout-panel">
+          <div class="panel-header"><div><div class="kicker">04 / MEASUREMENTS</div><h2>实时仪表数据</h2></div><span class="status-pill idle" id="statusPill">待机 READY</span></div>
+          <div class="meter-primary"><div class="meter-title">DUT 电压 <span id="polarityText">正向 / 未开始</span></div><div class="meter-number"><span id="voltageReading">+0.000</span><small>V</small></div><div class="meter-track"><div id="meterFill"></div></div></div>
+          <div class="meter-grid"><div><span>实际测试电流</span><strong id="actualCurrent">0.0000 <small>mA</small></strong></div><div><span>ADC 原始码</span><strong id="adcReading">0 <small>/ 1023</small></strong></div><div><span>模拟前端输入</span><strong id="afeReading">0.000 <small>V</small></strong></div><div><span>系统时钟</span><strong>22.1184 <small>MHz</small></strong></div></div>
+          <div class="process-head">测试流程 <span id="stepText">等待指令</span></div>
+          <div class="steps"><div data-step="switch"><i>1</i><span>继电器极性切换</span></div><div data-step="excite"><i>2</i><span>恒流源施加激励</span></div><div data-step="sample"><i>3</i><span>ADC 测量 + MCU 计算</span></div><div data-step="judge"><i>4</i><span>判定并保存结果</span></div></div>
+        </div>
+      </aside>
+    </main>
+    <section class="bottom-grid">
+      <div class="panel result-panel"><div class="panel-header"><div><div class="kicker">05 / TEST REPORT</div><h2>双向测试结果</h2></div><span class="report-note">目标：两方向各 1 次</span></div><div class="table-scroll"><table><thead><tr><th>方向</th><th>目标电流</th><th>实际电流</th><th>测得电压</th><th>判定</th></tr></thead><tbody><tr id="forwardRow"><td><span class="dir-pill">+ 正向</span></td><td class="goal-current">1.00 mA</td><td class="got-current">—</td><td class="got-voltage">—</td><td class="got-result"><span class="result-empty">未测试</span></td></tr><tr id="reverseRow"><td><span class="dir-pill reverse">− 反向</span></td><td class="goal-current">1.00 mA</td><td class="got-current">—</td><td class="got-voltage">—</td><td class="got-result"><span class="result-empty">未测试</span></td></tr></tbody></table></div><div class="report-summary" id="reportSummary">尚无测试结果。反向普通二极管可能达到电源限压，不能将限压误认为反向击穿电压。</div></div>
+      <div class="panel log-panel"><div class="panel-header"><div><div class="kicker">06 / MCU PROCESS</div><h2>单片机执行日志</h2></div><button class="text-btn" id="clearLog">清空日志</button></div><div id="eventLog" class="log-view" role="log" aria-live="polite"></div></div>
+    </section>
+    <footer class="footer"><div><b>测量模型：</b>理想化的恒流源 + 电压顺从限制 + 10位 ADC + 1/5 衰减测量前端。所有数据均为模拟生成，并非实测。</div><div><b>实板安全：</b>反向测试先核对器件型号和数据手册；加入限压、放电、极性切换死区和ADC过压保护。双向TVS在1mA下的电压不能直接等同数据手册指定电流下的击穿指标。</div></footer>
+  </div>
+  <script src="app.js" defer></script>
+</body>
+</html>

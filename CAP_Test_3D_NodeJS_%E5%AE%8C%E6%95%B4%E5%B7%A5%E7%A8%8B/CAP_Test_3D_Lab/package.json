@@ -1,0 +1,1 @@
+{"name":"cap-test-3d-lab","version":"2.0.0","private":true,"description":"Offline 3D constant-current capacitance lab","scripts":{"start":"node server.js"}}
