@@ -112,7 +112,8 @@ npm start
 feat: update diode FCT simulation model
 fix: correct ADC threshold display
 chore: refresh source archive
- docs: update Chinese traceability README
+docs: update Chinese traceability README
 ```
 
 提交说明应指出涉及的工程目录和主要文件，避免只写“修改代码”。发布或交付时同时记录 Git 提交号、工程目录和运行入口。
+
