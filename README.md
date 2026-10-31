@@ -117,3 +117,36 @@ docs: update Chinese traceability README
 
 提交说明应指出涉及的工程目录和主要文件，避免只写“修改代码”。发布或交付时同时记录 Git 提交号、工程目录和运行入口。
 
+
+## 新增：S0201848D01ET2F FCT 仿真平台
+
+来源文件：
+
+```text
+C:\Users\Administrator\Downloads\S0201848D01ET2F_FCT_%E4%BB%BF%E7%9C%9F%E5%B9%B3%E5%8F%B0.html
+```
+
+仓库文件：[`S0201848D01ET2F_FCT_%E4%BB%BF%E7%9C%9F%E5%B9%B3%E5%8F%B0.html`](S0201848D01ET2F_FCT_%E4%BB%BF%E7%9C%9F%E5%B9%B3%E5%8F%B0.html)
+
+这是一个单文件、离线可运行的 FCT 治具仿真平台，模型编号为 `S0201848D01ET2F`，包括：
+
+- 上模、下模、拨片、探针、启动灯和急停等机构动作示意；
+- `SW100`、`C503`、`D500`、Open/Short 等 FCT 项目；
+- 自动工序循环、手动动作、状态联锁、故障注入和 PASS/FAIL 判定；
+- 测试记录、事件日志、JSON/CSV 导出和方案参考页面；
+- 规划 CT 约 13 秒、理论 UPH 约 244，仅用于流程演示。
+
+运行方法：直接用 Chrome 或 Edge 打开该 HTML，不需要 Node.js、npm、服务器或网络连接。文件中的 CSS、SVG、图片数据和 JavaScript 均已内嵌。
+
+### 中文追溯关系
+
+| 功能 | HTML 内部追溯位置 |
+| --- | --- |
+| 页面标题和仿真边界 | `<title>`、顶部标题、`SIMULATION MODE` 标签 |
+| 机构动作和流程状态 | `state`、`STEPS`、`autoRun()`、`manual()` |
+| FCT 测试项目 | `SPEC`、`measure()`、`renderMeasurements()` |
+| 安全联锁 | `safety()`、`ensureSafe()`、`abortRun()`、`emergency()` |
+| 测试记录和导出 | `recordTest()`、`renderRecords()`、`exportCsv()`、JSON 导出处理 |
+| 方案图片和说明 | `reference` 页面中的内嵌 `data:image` 内容 |
+
+源码保持原始单文件结构；本次只增加仓库入口说明，不改变 HTML 内部逻辑。该仿真不连接真实控制器、气路、真空、继电器、压力传感器、ADC 或被测产品，尺寸和节拍不能直接作为加工或量产验收依据。
